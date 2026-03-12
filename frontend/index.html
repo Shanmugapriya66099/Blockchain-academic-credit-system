@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AcadChain — Blockchain Academic Credit System</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0a0e1a;
+      --surface: #111827;
+      --card: #1a2235;
+      --border: #1e3a5f;
+      --accent: #00d4ff;
+      --accent2: #7c3aed;
+      --green: #00ff9d;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --font-head: 'Syne', sans-serif;
+      --font-mono: 'Space Mono', monospace;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-head);
+      overflow-x: hidden;
+    }
+
+    /* GRID BACKGROUND */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.2rem 5%;
+      background: rgba(10,14,26,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(0,212,255,0.1);
+    }
+    .logo {
+      font-family: var(--font-mono);
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: -1px;
+    }
+    .logo span { color: var(--green); }
+    .nav-links { display: flex; gap: 2rem; align-items: center; }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+    .btn-nav {
+      background: var(--accent);
+      color: var(--bg) !important;
+      padding: 0.5rem 1.4rem;
+      border-radius: 4px;
+      font-family: var(--font-mono) !important;
+      font-size: 0.8rem !important;
+      transition: all 0.2s !important;
+    }
+    .btn-nav:hover { background: var(--green) !important; transform: translateY(-1px); }
+
+    /* HERO */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 8rem 5% 4rem;
+      z-index: 1;
+    }
+    .hero-content { max-width: 700px; }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(0,212,255,0.08);
+      border: 1px solid rgba(0,212,255,0.2);
+      border-radius: 100px;
+      padding: 0.4rem 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--accent);
+      margin-bottom: 2rem;
+      animation: fadeUp 0.6s ease both;
+    }
+    .badge-dot {
+      width: 6px; height: 6px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.5); }
+    }
+    .hero h1 {
+      font-size: clamp(2.8rem, 6vw, 5rem);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -2px;
+      margin-bottom: 1.5rem;
+      animation: fadeUp 0.6s 0.1s ease both;
+    }
+    .hero h1 .line-accent { color: var(--accent); }
+    .hero h1 .line-green { color: var(--green); }
+    .hero p {
+      font-size: 1.1rem;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 2.5rem;
+      max-width: 500px;
+      animation: fadeUp 0.6s 0.2s ease both;
+    }
+    .hero-btns {
+      display: flex; gap: 1rem; flex-wrap: wrap;
+      animation: fadeUp 0.6s 0.3s ease both;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: var(--bg);
+      padding: 0.9rem 2rem;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.2s;
+      border: none; cursor: pointer;
+      letter-spacing: 0.5px;
+    }
+    .btn-primary:hover { background: var(--green); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,212,255,0.3); }
+    .btn-secondary {
+      background: transparent;
+      color: var(--text);
+      padding: 0.9rem 2rem;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.2s;
+      border: 1px solid var(--border);
+      cursor: pointer;
+    }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+
+    /* HERO VISUAL */
+    .hero-visual {
+      position: absolute;
+      right: 5%;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 420px;
+      animation: fadeUp 0.8s 0.4s ease both;
+    }
+    .chain-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .chain-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+    }
+    .chain-card-label {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--accent);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 0.8rem;
+    }
+    .chain-hash {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--green);
+      word-break: break-all;
+      line-height: 1.6;
+    }
+    .chain-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 0.8rem;
+    }
+    .chain-status {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.75rem;
+      color: var(--green);
+      font-family: var(--font-mono);
+    }
+    .chain-connector {
+      text-align: center;
+      color: var(--accent);
+      font-size: 1.2rem;
+      margin: 0.3rem 0;
+    }
+
+    /* STATS */
+    .stats {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      gap: 2rem;
+      padding: 2rem 5%;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      background: var(--surface);
+      flex-wrap: wrap;
+    }
+    .stat { flex: 1; min-width: 150px; padding: 1.5rem; text-align: center; }
+    .stat-num {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--accent);
+      font-family: var(--font-mono);
+      display: block;
+    }
+    .stat-label { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 0.3rem; }
+
+    /* FEATURES */
+    .section {
+      position: relative;
+      z-index: 1;
+      padding: 6rem 5%;
+    }
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--accent);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+    .section-title {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 800;
+      letter-spacing: -1.5px;
+      margin-bottom: 1rem;
+    }
+    .section-sub { color: var(--muted); font-size: 1rem; max-width: 500px; line-height: 1.7; margin-bottom: 3rem; }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    .feature-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    .feature-card:hover { border-color: var(--accent); transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+    .feature-icon {
+      width: 48px; height: 48px;
+      background: rgba(0,212,255,0.1);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      margin-bottom: 1.2rem;
+    }
+    .feature-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.6rem; }
+    .feature-card p { font-size: 0.9rem; color: var(--muted); line-height: 1.6; }
+
+    /* HOW IT WORKS */
+    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 2rem; margin-top: 3rem; }
+    .step { text-align: center; }
+    .step-num {
+      width: 56px; height: 56px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: white;
+      margin: 0 auto 1.2rem;
+    }
+    .step h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .step p { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+    .step-arrow { display: flex; align-items: center; justify-content: center; color: var(--border); font-size: 1.5rem; padding-top: 1.5rem; }
+
+    /* CTA */
+    .cta-section {
+      position: relative;
+      z-index: 1;
+      margin: 0 5% 6rem;
+      background: linear-gradient(135deg, rgba(0,212,255,0.08), rgba(124,58,237,0.08));
+      border: 1px solid rgba(0,212,255,0.15);
+      border-radius: 20px;
+      padding: 5rem;
+      text-align: center;
+      overflow: hidden;
+    }
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: radial-gradient(circle at 50% 50%, rgba(0,212,255,0.05) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .cta-section h2 { font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; letter-spacing: -1.5px; margin-bottom: 1rem; }
+    .cta-section p { color: var(--muted); margin-bottom: 2.5rem; font-size: 1rem; }
+
+    /* FOOTER */
+    footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 2rem 5%;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      color: var(--muted);
+      font-size: 0.85rem;
+      font-family: var(--font-mono);
+    }
+    footer span { color: var(--accent); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 900px) {
+      .hero-visual { display: none; }
+      .hero { min-height: auto; padding-top: 7rem; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Acad<span>Chain</span></div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#how">How It Works</a>
+    <a href="login.html" class="btn-nav">Login →</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      Powered by Ethereum Blockchain
+    </div>
+    <h1>
+      Academic Credits<br/>
+      <span class="line-accent">Verified.</span>
+      <span class="line-green">Immutable.</span><br/>
+      Trusted.
+    </h1>
+    <p>A tamper-proof system for issuing, managing, and verifying academic credits using blockchain technology. Every credential is permanently recorded on-chain.</p>
+    <div class="hero-btns">
+      <a href="login.html" class="btn-primary">Get Started →</a>
+      <a href="#how" class="btn-secondary">How It Works</a>
+    </div>
+  </div>
+
+  <div class="hero-visual">
+    <div class="chain-card">
+      <div class="chain-card-label">⛓ Block #4821947</div>
+      <div class="chain-hash">0x3f4a8c2d1e9b7f6a2c4d8e1f3a7b9c2d4e6f8a1b3c5d7e9f1a2b3c4d5e6f7a8b</div>
+      <div class="chain-row">
+        <div class="chain-status"><span>●</span> Confirmed</div>
+        <div style="font-size:0.7rem;color:var(--muted);font-family:var(--font-mono);">2 mins ago</div>
+      </div>
+    </div>
+    <div class="chain-connector">↕</div>
+    <div class="chain-card">
+      <div class="chain-card-label">🎓 Credit Issued</div>
+      <div style="display:flex;gap:1rem;margin-bottom:0.5rem;">
+        <div>
+          <div style="font-size:0.65rem;color:var(--muted);font-family:var(--font-mono);">STUDENT</div>
+          <div style="font-size:0.85rem;font-weight:700;">21CS047</div>
+        </div>
+        <div>
+          <div style="font-size:0.65rem;color:var(--muted);font-family:var(--font-mono);">COURSE</div>
+          <div style="font-size:0.85rem;font-weight:700;">DBMS</div>
+        </div>
+        <div>
+          <div style="font-size:0.65rem;color:var(--muted);font-family:var(--font-mono);">GRADE</div>
+          <div style="font-size:0.85rem;font-weight:700;color:var(--green);">A+</div>
+        </div>
+        <div>
+          <div style="font-size:0.65rem;color:var(--muted);font-family:var(--font-mono);">CREDITS</div>
+          <div style="font-size:0.85rem;font-weight:700;color:var(--accent);">4</div>
+        </div>
+      </div>
+      <div class="chain-status"><span>●</span> Verified on Sepolia Testnet</div>
+    </div>
+    <div class="chain-connector">↕</div>
+    <div class="chain-card">
+      <div class="chain-card-label">🔒 Immutable Record</div>
+      <div style="font-size:0.8rem;color:var(--muted);font-family:var(--font-mono);line-height:1.6;">
+        Cannot be altered · Cannot be deleted<br/>
+        Verifiable by anyone · Forever on-chain
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="stats">
+  <div class="stat"><span class="stat-num">100%</span><div class="stat-label">Tamper Proof</div></div>
+  <div class="stat"><span class="stat-num">∞</span><div class="stat-label">Permanent Storage</div></div>
+  <div class="stat"><span class="stat-num">0</span><div class="stat-label">Forgeries Possible</div></div>
+  <div class="stat"><span class="stat-num">2</span><div class="stat-label">User Roles</div></div>
+</div>
+
+<section class="section" id="features">
+  <div class="section-label">// Features</div>
+  <div class="section-title">Everything You Need</div>
+  <div class="section-sub">A complete academic credit management system with blockchain-backed verification at every step.</div>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">🔐</div>
+      <h3>Secure Login</h3>
+      <p>Role-based access for Admins and Students. Each user sees only what they need.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📋</div>
+      <h3>Credit Issuance</h3>
+      <p>Admins can issue credits to students. Each issuance is recorded on the Ethereum blockchain.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">✅</div>
+      <h3>Blockchain Verification</h3>
+      <p>Every credential has a transaction hash verifiable on Etherscan — 100% transparent.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🎓</div>
+      <h3>Student Dashboard</h3>
+      <p>Students can login and view all their credits, grades, and blockchain proof in one place.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📊</div>
+      <h3>Admin Control</h3>
+      <p>Full control to manage students, courses, and issued credits from a clean dashboard.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⛓</div>
+      <h3>Immutable Records</h3>
+      <p>Once issued on blockchain, credits cannot be altered or deleted by anyone — ever.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="how" style="background: var(--surface);">
+  <div class="section-label">// How It Works</div>
+  <div class="section-title">Simple 4-Step Process</div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">01</div>
+      <h3>Register Student</h3>
+      <p>Admin registers students in the system with their department and details.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <h3>Issue Credits</h3>
+      <p>Admin issues course credits and grades after evaluations are complete.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <h3>Record on Blockchain</h3>
+      <p>The credit record is pushed to the smart contract on Ethereum Sepolia Testnet.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">04</div>
+      <h3>Student Verifies</h3>
+      <p>Students login, view their results and click to verify the transaction hash on Etherscan.</p>
+    </div>
+  </div>
+</section>
+
+<div class="cta-section">
+  <h2>Ready to Get Started?</h2>
+  <p>Login as Admin to manage credits or as a Student to view your results.</p>
+  <a href="login.html" class="btn-primary" style="font-size:1rem;padding:1rem 2.5rem;">Login Now →</a>
+</div>
+
+<footer>
+  <p>AcadChain © 2024 — Built on <span>Ethereum</span> · Blockchain Based Academic Credit System</p>
+</footer>
+
+</body>
+</html>
