@@ -6,326 +6,107 @@
   <title>Login — AcadChain</title>
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
   <style>
-    :root {
-      --bg: #0a0e1a;
-      --surface: #111827;
-      --card: #1a2235;
-      --border: #1e3a5f;
-      --accent: #00d4ff;
-      --accent2: #7c3aed;
-      --green: #00ff9d;
-      --text: #e2e8f0;
-      --muted: #64748b;
-      --error: #ff4d6d;
-      --font-head: 'Syne', sans-serif;
-      --font-mono: 'Space Mono', monospace;
-    }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--font-head);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
-      background-size: 60px 60px;
-      pointer-events: none;
-    }
-
-    .login-container {
-      position: relative;
-      z-index: 1;
-      width: 100%;
-      max-width: 460px;
-      padding: 1.5rem;
-      animation: fadeUp 0.5s ease both;
-    }
-
-    .back-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      color: var(--muted);
-      text-decoration: none;
-      font-family: var(--font-mono);
-      font-size: 0.8rem;
-      margin-bottom: 2rem;
-      transition: color 0.2s;
-    }
-    .back-link:hover { color: var(--accent); }
-
-    .login-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 2.5rem;
-      position: relative;
-      overflow: hidden;
-    }
-    .login-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 3px;
-      background: linear-gradient(90deg, var(--accent), var(--accent2), var(--green));
-    }
-
-    .login-logo {
-      font-family: var(--font-mono);
-      font-size: 1.4rem;
-      font-weight: 700;
-      color: var(--accent);
-      margin-bottom: 0.5rem;
-    }
-    .login-logo span { color: var(--green); }
-    .login-title {
-      font-size: 1.6rem;
-      font-weight: 800;
-      letter-spacing: -1px;
-      margin-bottom: 0.4rem;
-    }
-    .login-sub {
-      color: var(--muted);
-      font-size: 0.9rem;
-      margin-bottom: 2rem;
-    }
-
-    /* ROLE TOGGLE */
-    .role-toggle {
-      display: flex;
-      background: var(--surface);
-      border-radius: 8px;
-      padding: 4px;
-      margin-bottom: 2rem;
-      gap: 4px;
-    }
-    .role-btn {
-      flex: 1;
-      padding: 0.65rem;
-      border: none;
-      border-radius: 6px;
-      background: transparent;
-      color: var(--muted);
-      font-family: var(--font-head);
-      font-size: 0.9rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .role-btn.active {
-      background: var(--accent);
-      color: var(--bg);
-    }
-
-    /* FORM */
-    .form-group { margin-bottom: 1.2rem; }
-    label {
-      display: block;
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
-      color: var(--muted);
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      margin-bottom: 0.5rem;
-    }
-    input {
-      width: 100%;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 0.85rem 1rem;
-      color: var(--text);
-      font-family: var(--font-mono);
-      font-size: 0.9rem;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-    input:focus { border-color: var(--accent); }
-    input::placeholder { color: var(--muted); }
-    input.error { border-color: var(--error); }
-
-    .error-msg {
-      display: none;
-      color: var(--error);
-      font-size: 0.78rem;
-      font-family: var(--font-mono);
-      margin-top: 0.4rem;
-    }
-    .error-msg.show { display: block; }
-
-    .alert {
-      display: none;
-      background: rgba(255,77,109,0.1);
-      border: 1px solid rgba(255,77,109,0.3);
-      border-radius: 8px;
-      padding: 0.8rem 1rem;
-      color: var(--error);
-      font-size: 0.85rem;
-      font-family: var(--font-mono);
-      margin-bottom: 1.2rem;
-    }
-    .alert.show { display: block; }
-
-    .btn-login {
-      width: 100%;
-      background: var(--accent);
-      color: var(--bg);
-      border: none;
-      border-radius: 8px;
-      padding: 1rem;
-      font-family: var(--font-mono);
-      font-size: 0.95rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s;
-      margin-top: 0.5rem;
-      letter-spacing: 0.5px;
-    }
-    .btn-login:hover { background: var(--green); transform: translateY(-1px); box-shadow: 0 8px 30px rgba(0,212,255,0.25); }
-    .btn-login:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-
-    .login-footer {
-      text-align: center;
-      margin-top: 1.5rem;
-      color: var(--muted);
-      font-size: 0.85rem;
-    }
-    .login-footer a { color: var(--accent); text-decoration: none; }
-    .login-footer a:hover { color: var(--green); }
-
-    .demo-hint {
-      background: rgba(0,212,255,0.05);
-      border: 1px solid rgba(0,212,255,0.1);
-      border-radius: 8px;
-      padding: 0.8rem 1rem;
-      margin-top: 1.5rem;
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      color: var(--muted);
-      line-height: 1.7;
-    }
-    .demo-hint strong { color: var(--accent); }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    :root { --bg:#0a0e1a;--surface:#111827;--card:#1a2235;--border:#1e3a5f;--accent:#00d4ff;--accent2:#7c3aed;--green:#00ff9d;--text:#e2e8f0;--muted:#64748b;--error:#ff4d6d;--font-head:'Syne',sans-serif;--font-mono:'Space Mono',monospace; }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{background:var(--bg);color:var(--text);font-family:var(--font-head);min-height:100vh;display:flex;align-items:center;justify-content:center;}
+    body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,212,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.03) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;}
+    .container{position:relative;z-index:1;width:100%;max-width:460px;padding:1.5rem;}
+    .back-link{display:inline-flex;align-items:center;gap:0.5rem;color:var(--muted);text-decoration:none;font-family:var(--font-mono);font-size:0.8rem;margin-bottom:2rem;transition:color 0.2s;}
+    .back-link:hover{color:var(--accent);}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2.5rem;position:relative;overflow:hidden;}
+    .card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--green));}
+    .logo{font-family:var(--font-mono);font-size:1.4rem;font-weight:700;color:var(--accent);margin-bottom:0.5rem;}
+    .logo span{color:var(--green);}
+    h1{font-size:1.6rem;font-weight:800;letter-spacing:-1px;margin-bottom:0.4rem;}
+    .sub{color:var(--muted);font-size:0.9rem;margin-bottom:2rem;}
+    .role-toggle{display:flex;background:var(--surface);border-radius:8px;padding:4px;margin-bottom:2rem;gap:4px;}
+    .role-btn{flex:1;padding:0.65rem;border:none;border-radius:6px;background:transparent;color:var(--muted);font-family:var(--font-head);font-size:0.9rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
+    .role-btn.active{background:var(--accent);color:var(--bg);}
+    .form-group{margin-bottom:1.2rem;}
+    label{display:block;font-family:var(--font-mono);font-size:0.75rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:0.5rem;}
+    input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:0.85rem 1rem;color:var(--text);font-family:var(--font-mono);font-size:0.9rem;outline:none;transition:border-color 0.2s;}
+    input:focus{border-color:var(--accent);}
+    .alert{display:none;background:rgba(255,77,109,0.1);border:1px solid rgba(255,77,109,0.3);border-radius:8px;padding:0.8rem 1rem;color:var(--error);font-size:0.85rem;font-family:var(--font-mono);margin-bottom:1.2rem;}
+    .alert.show{display:block;}
+    .btn{width:100%;background:var(--accent);color:var(--bg);border:none;border-radius:8px;padding:1rem;font-family:var(--font-mono);font-size:0.95rem;font-weight:700;cursor:pointer;transition:all 0.2s;margin-top:0.5rem;}
+    .btn:hover{background:var(--green);}
+    .btn:disabled{opacity:0.6;cursor:not-allowed;}
+    .footer{text-align:center;margin-top:1.5rem;color:var(--muted);font-size:0.85rem;}
+    .footer a{color:var(--accent);text-decoration:none;}
   </style>
 </head>
 <body>
-
-<div class="login-container">
+<div class="container">
   <a href="index.html" class="back-link">← Back to Home</a>
-
-  <div class="login-card">
-    <div class="login-logo">Acad<span>Chain</span></div>
-    <div class="login-title">Welcome Back</div>
-    <div class="login-sub">Sign in to your account to continue</div>
-
+  <div class="card">
+    <div class="logo">Acad<span>Chain</span></div>
+    <h1>Welcome Back</h1>
+    <div class="sub">Sign in to your account to continue</div>
     <div class="role-toggle">
       <button class="role-btn active" onclick="setRole('ADMIN')" id="btn-admin">👨‍💼 Admin</button>
       <button class="role-btn" onclick="setRole('STUDENT')" id="btn-student">🎓 Student</button>
     </div>
-
-    <div class="alert" id="alert-box">Invalid email or password. Please try again.</div>
-
+    <div class="alert" id="alert-box">Invalid credentials.</div>
     <div class="form-group">
       <label>Email Address</label>
-      <input type="email" id="email" placeholder="Enter your email" />
-      <div class="error-msg" id="email-error">Please enter a valid email</div>
+      <input type="email" id="email" placeholder="Enter your email"/>
     </div>
-
     <div class="form-group">
       <label>Password</label>
-      <input type="password" id="password" placeholder="Enter your password" />
-      <div class="error-msg" id="pass-error">Password is required</div>
+      <input type="password" id="password" placeholder="Enter your password"/>
     </div>
-
-    <button class="btn-login" id="login-btn" onclick="handleLogin()">Login →</button>
-
-    <div class="login-footer">
-      Don't have an account? <a href="register.html">Register here</a>
-    </div>
-
-    <div class="demo-hint">
-      <strong>// Demo Credentials</strong><br/>
-      Admin: admin@acadchain.com / admin123<br/>
-      Student: student@acadchain.com / student123
-    </div>
+    <button class="btn" id="login-btn" onclick="handleLogin()">Login →</button>
+    <div class="footer">Don't have an account? <a href="register.html">Register here</a></div>
   </div>
 </div>
-
 <script>
+  const API = 'http://localhost:8080';
   let currentRole = 'ADMIN';
-
+ 
   function setRole(role) {
     currentRole = role;
-    document.getElementById('btn-admin').classList.toggle('active', role === 'ADMIN');
-    document.getElementById('btn-student').classList.toggle('active', role === 'STUDENT');
+    document.getElementById('btn-admin').classList.toggle('active', role==='ADMIN');
+    document.getElementById('btn-student').classList.toggle('active', role==='STUDENT');
   }
-
+ 
   function handleLogin() {
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value.trim();
-    const emailErr = document.getElementById('email-error');
-    const passErr = document.getElementById('pass-error');
     const alertBox = document.getElementById('alert-box');
     const btn = document.getElementById('login-btn');
-    let valid = true;
-
-    // Reset
-    document.getElementById('email').classList.remove('error');
-    document.getElementById('password').classList.remove('error');
-    emailErr.classList.remove('show');
-    passErr.classList.remove('show');
+ 
     alertBox.classList.remove('show');
-
-    if (!email || !email.includes('@')) {
-      document.getElementById('email').classList.add('error');
-      emailErr.classList.add('show');
-      valid = false;
-    }
-    if (!password) {
-      document.getElementById('password').classList.add('error');
-      passErr.classList.add('show');
-      valid = false;
-    }
-    if (!valid) return;
-
-    // Demo login logic — replace with real API call to Spring Boot
-    btn.disabled = true;
-    btn.textContent = 'Logging in...';
-
-    setTimeout(() => {
-      const adminDemo = email === 'admin@acadchain.com' && password === 'admin123';
-      const studentDemo = email === 'student@acadchain.com' && password === 'student123';
-
-      if (currentRole === 'ADMIN' && adminDemo) {
-        sessionStorage.setItem('user', JSON.stringify({ name: 'Admin User', role: 'ADMIN', email }));
-        window.location.href = 'admin-dashboard.html';
-      } else if (currentRole === 'STUDENT' && studentDemo) {
-        sessionStorage.setItem('user', JSON.stringify({ name: 'John Doe', role: 'STUDENT', email, regNo: '21CS047' }));
-        window.location.href = 'student-dashboard.html';
+    if (!email || !password) { alertBox.textContent='Please enter email and password'; alertBox.classList.add('show'); return; }
+ 
+    btn.disabled = true; btn.textContent = 'Logging in...';
+ 
+    fetch(API + '/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ email, password, role: currentRole })
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) {
+        localStorage.setItem('acadchain_user', JSON.stringify(data));
+        if (data.role === 'ADMIN') window.location.href = 'admin-dashboard.html';
+        else window.location.href = 'student-dashboard.html';
       } else {
+        alertBox.textContent = data.message || 'Invalid credentials';
         alertBox.classList.add('show');
-        btn.disabled = false;
-        btn.textContent = 'Login →';
+        btn.disabled = false; btn.textContent = 'Login →';
       }
-    }, 1000);
+    })
+    .catch(() => {
+      alertBox.textContent = '❌ Cannot connect to server! Make sure Spring Boot is running on port 8080';
+      alertBox.classList.add('show');
+      btn.disabled = false; btn.textContent = 'Login →';
+    });
   }
-
-  // Allow Enter key
-  document.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleLogin(); });
+ 
+  document.addEventListener('keydown', e => { if(e.key==='Enter') handleLogin(); });
 </script>
-
 </body>
 </html>
+ 

@@ -1,7 +1,3 @@
-
-Student dashboard · HTML
-Copy
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,376 +6,260 @@ Copy
   <title>Student Dashboard — AcadChain</title>
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
   <style>
-    :root {
-      --bg: #0a0e1a; --surface: #111827; --card: #1a2235;
-      --border: #1e3a5f; --accent: #00d4ff; --accent2: #7c3aed;
-      --green: #00ff9d; --text: #e2e8f0; --muted: #64748b;
-      --font-head: 'Syne', sans-serif; --font-mono: 'Space Mono', monospace;
-    }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: var(--bg); color: var(--text); font-family: var(--font-head); display: flex; min-height: 100vh; }
-
-    /* SIDEBAR */
-    .sidebar {
-      width: 240px; background: var(--surface); border-right: 1px solid var(--border);
-      display: flex; flex-direction: column; padding: 1.5rem 0; position: fixed; height: 100vh; z-index: 10;
-    }
-    .sidebar-logo { font-family: var(--font-mono); font-size: 1.2rem; font-weight: 700; color: var(--accent); padding: 0 1.5rem 1.5rem; border-bottom: 1px solid var(--border); }
-    .sidebar-logo span { color: var(--green); }
-    .sidebar-role { font-family: var(--font-mono); font-size: 0.65rem; color: var(--green); letter-spacing: 2px; text-transform: uppercase; padding: 1.2rem 1.5rem 0.5rem; }
-    .sidebar-nav { flex: 1; padding: 0.5rem 0; }
-    .nav-item {
-      display: flex; align-items: center; gap: 0.8rem; padding: 0.8rem 1.5rem;
-      color: var(--muted); text-decoration: none; font-size: 0.9rem; font-weight: 600;
-      transition: all 0.2s; cursor: pointer; border: none; background: none; width: 100%; text-align: left;
-    }
-    .nav-item:hover, .nav-item.active { color: var(--text); background: rgba(0,255,157,0.07); border-right: 3px solid var(--green); }
-    .nav-item.active { color: var(--green); }
-    .nav-icon { font-size: 1.1rem; width: 20px; }
-    .sidebar-bottom { padding: 1rem 1.5rem; border-top: 1px solid var(--border); }
-    .student-info { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1rem; }
-    .student-avatar { width: 40px; height: 40px; background: linear-gradient(135deg, var(--green), var(--accent)); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1rem; color: var(--bg); }
-    .student-name { font-size: 0.85rem; font-weight: 700; }
-    .student-reg { font-family: var(--font-mono); font-size: 0.65rem; color: var(--accent); }
-    .btn-logout { width: 100%; background: transparent; border: 1px solid var(--border); border-radius: 6px; padding: 0.6rem; color: var(--muted); font-family: var(--font-mono); font-size: 0.75rem; cursor: pointer; transition: all 0.2s; }
-    .btn-logout:hover { border-color: #ff4d6d; color: #ff4d6d; }
-
-    /* MAIN */
-    .main { margin-left: 240px; flex: 1; padding: 2rem; }
-    .page-section { display: none; }
-    .page-section.active { display: block; animation: fadeUp 0.3s ease; }
-
-    .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
-    .page-title { font-size: 1.8rem; font-weight: 800; letter-spacing: -1px; }
-    .page-sub { color: var(--muted); font-size: 0.85rem; margin-top: 0.2rem; font-family: var(--font-mono); }
-
-    /* WELCOME BANNER */
-    .welcome-banner {
-      background: linear-gradient(135deg, rgba(0,255,157,0.08), rgba(0,212,255,0.05));
-      border: 1px solid rgba(0,255,157,0.15);
-      border-radius: 16px; padding: 2rem; margin-bottom: 2rem;
-      display: flex; justify-content: space-between; align-items: center;
-      position: relative; overflow: hidden;
-    }
-    .welcome-banner::before {
-      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-      background: linear-gradient(90deg, var(--green), var(--accent));
-    }
-    .welcome-text h2 { font-size: 1.5rem; font-weight: 800; }
-    .welcome-text p { color: var(--muted); font-size: 0.9rem; margin-top: 0.3rem; }
-    .welcome-stats { display: flex; gap: 2rem; }
-    .w-stat { text-align: center; }
-    .w-stat-num { font-family: var(--font-mono); font-size: 1.8rem; font-weight: 700; color: var(--green); }
-    .w-stat-label { font-size: 0.75rem; color: var(--muted); margin-top: 0.2rem; }
-
-    /* STATS */
-    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; margin-bottom: 2rem; }
-    .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; position: relative; overflow: hidden; transition: transform 0.2s; }
-    .stat-card:hover { transform: translateY(-2px); }
-    .stat-card::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
-    .stat-card:nth-child(1)::after { background: var(--green); }
-    .stat-card:nth-child(2)::after { background: var(--accent); }
-    .stat-card:nth-child(3)::after { background: var(--accent2); }
-    .stat-icon { font-size: 1.8rem; margin-bottom: 0.8rem; }
-    .stat-num { font-family: var(--font-mono); font-size: 2rem; font-weight: 700; }
-    .stat-label { color: var(--muted); font-size: 0.8rem; margin-top: 0.2rem; }
-
-    /* RESULTS TABLE */
-    .section-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 1.5rem; }
-    .section-header { padding: 1.2rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-    .section-header h3 { font-size: 1rem; font-weight: 700; }
-    .section-header span { font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted); }
-    table { width: 100%; border-collapse: collapse; }
-    th { padding: 0.8rem 1.5rem; text-align: left; font-family: var(--font-mono); font-size: 0.7rem; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; border-bottom: 1px solid var(--border); }
-    td { padding: 1rem 1.5rem; font-size: 0.88rem; border-bottom: 1px solid rgba(30,58,95,0.4); vertical-align: middle; }
-    tr:last-child td { border-bottom: none; }
-    tr:hover td { background: rgba(0,255,157,0.03); }
-
-    .badge { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.25rem 0.7rem; border-radius: 100px; font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; }
-    .badge-green { background: rgba(0,255,157,0.1); color: var(--green); border: 1px solid rgba(0,255,157,0.2); }
-    .badge-blue { background: rgba(0,212,255,0.1); color: var(--accent); border: 1px solid rgba(0,212,255,0.2); }
-    .badge-yellow { background: rgba(245,158,11,0.1); color: #f59e0b; border: 1px solid rgba(245,158,11,0.2); }
-    .badge-purple { background: rgba(124,58,237,0.1); color: #a78bfa; border: 1px solid rgba(124,58,237,0.2); }
-
-    .verify-btn {
-      display: inline-flex; align-items: center; gap: 0.4rem;
-      background: rgba(0,255,157,0.08); color: var(--green); border: 1px solid rgba(0,255,157,0.2);
-      border-radius: 6px; padding: 0.35rem 0.8rem; font-family: var(--font-mono); font-size: 0.72rem;
-      text-decoration: none; transition: all 0.2s; cursor: pointer;
-    }
-    .verify-btn:hover { background: rgba(0,255,157,0.15); transform: translateY(-1px); }
-
-    /* CGPA CARD */
-    .cgpa-section { display: grid; grid-template-columns: 1fr 2fr; gap: 1.5rem; margin-bottom: 1.5rem; }
-    .cgpa-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; text-align: center; position: relative; overflow: hidden; }
-    .cgpa-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--green), var(--accent)); }
-    .cgpa-ring { width: 120px; height: 120px; margin: 0 auto 1rem; position: relative; }
-    .cgpa-ring svg { transform: rotate(-90deg); }
-    .cgpa-ring circle { fill: none; stroke-width: 10; }
-    .cgpa-ring .bg { stroke: var(--border); }
-    .cgpa-ring .fg { stroke: var(--green); stroke-linecap: round; stroke-dasharray: 314; stroke-dashoffset: 47; transition: stroke-dashoffset 1s ease; }
-    .cgpa-value { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: var(--font-mono); font-size: 1.4rem; font-weight: 700; color: var(--green); }
-    .cgpa-label { font-size: 0.8rem; color: var(--muted); }
-
-    /* PROFILE PAGE */
-    .profile-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 1.5rem; }
-    .profile-avatar-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; text-align: center; }
-    .big-avatar { width: 90px; height: 90px; background: linear-gradient(135deg, var(--green), var(--accent)); border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: 800; color: var(--bg); margin: 0 auto 1rem; }
-    .profile-name { font-size: 1.2rem; font-weight: 800; }
-    .profile-reg { font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent); margin-top: 0.3rem; }
-    .profile-dept { font-size: 0.85rem; color: var(--muted); margin-top: 0.5rem; }
-    .profile-details { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; }
-    .detail-row { display: flex; justify-content: space-between; padding: 0.9rem 0; border-bottom: 1px solid rgba(30,58,95,0.5); }
-    .detail-row:last-child { border-bottom: none; }
-    .detail-label { font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
-    .detail-value { font-size: 0.9rem; font-weight: 600; }
-
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+    :root{--bg:#0a0e1a;--surface:#111827;--card:#1a2235;--border:#1e3a5f;--accent:#00d4ff;--accent2:#7c3aed;--green:#00ff9d;--text:#e2e8f0;--muted:#64748b;--font-head:'Syne',sans-serif;--font-mono:'Space Mono',monospace;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{background:var(--bg);color:var(--text);font-family:var(--font-head);display:flex;min-height:100vh;}
+    .sidebar{width:240px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:1.5rem 0;position:fixed;height:100vh;z-index:10;}
+    .sidebar-logo{font-family:var(--font-mono);font-size:1.2rem;font-weight:700;color:var(--accent);padding:0 1.5rem 1.5rem;border-bottom:1px solid var(--border);}
+    .sidebar-logo span{color:var(--green);}
+    .sidebar-role{font-family:var(--font-mono);font-size:0.65rem;color:var(--green);letter-spacing:2px;text-transform:uppercase;padding:1.2rem 1.5rem 0.5rem;}
+    .sidebar-nav{flex:1;padding:0.5rem 0;}
+    .nav-item{display:flex;align-items:center;gap:0.8rem;padding:0.8rem 1.5rem;color:var(--muted);font-size:0.9rem;font-weight:600;transition:all 0.2s;cursor:pointer;border:none;background:none;width:100%;text-align:left;}
+    .nav-item:hover,.nav-item.active{color:var(--text);background:rgba(0,255,157,0.07);border-right:3px solid var(--green);}
+    .nav-item.active{color:var(--green);}
+    .nav-icon{font-size:1.1rem;width:20px;}
+    .sidebar-bottom{padding:1rem 1.5rem;border-top:1px solid var(--border);}
+    .student-info{display:flex;align-items:center;gap:0.8rem;margin-bottom:1rem;}
+    .student-avatar{width:40px;height:40px;background:linear-gradient(135deg,var(--green),var(--accent));border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1rem;color:var(--bg);}
+    .student-name{font-size:0.85rem;font-weight:700;}
+    .student-reg{font-family:var(--font-mono);font-size:0.65rem;color:var(--accent);}
+    .btn-logout{width:100%;background:transparent;border:1px solid var(--border);border-radius:6px;padding:0.6rem;color:var(--muted);font-family:var(--font-mono);font-size:0.75rem;cursor:pointer;transition:all 0.2s;}
+    .btn-logout:hover{border-color:#ff4d6d;color:#ff4d6d;}
+    .main{margin-left:240px;flex:1;padding:2rem;}
+    .page-section{display:none;}
+    .page-section.active{display:block;animation:fadeUp 0.3s ease;}
+    .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;}
+    .page-title{font-size:1.8rem;font-weight:800;letter-spacing:-1px;}
+    .page-sub{color:var(--muted);font-size:0.85rem;margin-top:0.2rem;font-family:var(--font-mono);}
+    .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-bottom:2rem;}
+    .stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.5rem;position:relative;overflow:hidden;}
+    .stat-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+    .stat-card:nth-child(1)::after{background:var(--accent);}
+    .stat-card:nth-child(2)::after{background:var(--green);}
+    .stat-card:nth-child(3)::after{background:var(--accent2);}
+    .stat-icon{font-size:1.8rem;margin-bottom:0.8rem;}
+    .w-stat-num{font-family:var(--font-mono);font-size:2rem;font-weight:700;}
+    .stat-label{color:var(--muted);font-size:0.8rem;margin-top:0.2rem;}
+    .section-card{background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:1.5rem;}
+    .section-header{padding:1.2rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+    .section-header h3{font-size:1rem;font-weight:700;}
+    table{width:100%;border-collapse:collapse;}
+    th{padding:0.8rem 1.5rem;text-align:left;font-family:var(--font-mono);font-size:0.7rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--border);}
+    td{padding:1rem 1.5rem;font-size:0.88rem;border-bottom:1px solid rgba(30,58,95,0.4);}
+    tr:last-child td{border-bottom:none;}
+    .badge{display:inline-flex;align-items:center;padding:0.25rem 0.7rem;border-radius:100px;font-family:var(--font-mono);font-size:0.7rem;font-weight:700;}
+    .badge-green{background:rgba(0,255,157,0.1);color:var(--green);border:1px solid rgba(0,255,157,0.2);}
+    .badge-blue{background:rgba(0,212,255,0.1);color:var(--accent);border:1px solid rgba(0,212,255,0.2);}
+    .verify-btn{background:rgba(0,255,157,0.1);border:1px solid rgba(0,255,157,0.2);border-radius:4px;padding:0.3rem 0.7rem;color:var(--green);font-family:var(--font-mono);font-size:0.7rem;text-decoration:none;cursor:pointer;}
+    .cgpa-display{text-align:center;padding:2rem;}
+    .cgpa-value{font-family:var(--font-mono);font-size:4rem;font-weight:700;color:var(--green);}
+    .cgpa-label{color:var(--muted);font-family:var(--font-mono);font-size:0.8rem;margin-top:0.5rem;}
+    .verify-box{padding:1.5rem;}
+    .verify-input-row{display:flex;gap:1rem;margin-bottom:1rem;}
+    .verify-input-row input{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:0.75rem 1rem;color:var(--text);font-family:var(--font-mono);font-size:0.85rem;outline:none;}
+    .verify-input-row input:focus{border-color:var(--accent);}
+    .btn-verify{background:var(--accent);color:var(--bg);border:none;border-radius:8px;padding:0.75rem 1.5rem;font-family:var(--font-mono);font-size:0.85rem;font-weight:700;cursor:pointer;white-space:nowrap;}
+    .verify-result{display:none;background:rgba(0,255,157,0.08);border:1px solid rgba(0,255,157,0.2);border-radius:8px;padding:1rem;margin-top:1rem;font-family:var(--font-mono);font-size:0.82rem;color:var(--green);}
+    .detail-row{display:flex;justify-content:space-between;padding:0.8rem 0;border-bottom:1px solid rgba(30,58,95,0.4);}
+    .detail-label{color:var(--muted);font-family:var(--font-mono);font-size:0.78rem;}
+    .detail-value{font-weight:600;font-size:0.88rem;}
+    .msg{text-align:center;color:var(--muted);padding:2rem;font-family:var(--font-mono);font-size:0.85rem;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
   </style>
 </head>
 <body>
-
-<!-- SIDEBAR -->
 <div class="sidebar">
   <div class="sidebar-logo">Acad<span>Chain</span></div>
   <div class="sidebar-role">// Student Portal</div>
   <nav class="sidebar-nav">
-    <button class="nav-item active" onclick="showPage('dashboard', this)"><span class="nav-icon">🏠</span> Dashboard</button>
-    <button class="nav-item" onclick="showPage('results', this)"><span class="nav-icon">📋</span> My Results</button>
-    <button class="nav-item" onclick="showPage('verify', this)"><span class="nav-icon">🔍</span> Verify</button>
-    <button class="nav-item" onclick="showPage('profile', this)"><span class="nav-icon">👤</span> My Profile</button>
+    <button class="nav-item active" onclick="showPage('dashboard',this)"><span class="nav-icon">🏠</span> Dashboard</button>
+    <button class="nav-item" onclick="showPage('results',this)"><span class="nav-icon">📊</span> My Results</button>
+    <button class="nav-item" onclick="showPage('cgpa',this)"><span class="nav-icon">🎯</span> CGPA</button>
+    <button class="nav-item" onclick="showPage('verify',this)"><span class="nav-icon">⛓</span> Verify Hash</button>
+    <button class="nav-item" onclick="showPage('profile',this)"><span class="nav-icon">👤</span> Profile</button>
   </nav>
   <div class="sidebar-bottom">
     <div class="student-info">
-      <div class="student-avatar" id="s-avatar">J</div>
-      <div>
-        <div class="student-name" id="s-name">John Doe</div>
-        <div class="student-reg" id="s-reg">21CS047</div>
-      </div>
+      <div class="student-avatar" id="s-avatar">S</div>
+      <div><div class="student-name" id="s-name">Student</div><div class="student-reg" id="s-reg">Loading...</div></div>
     </div>
     <button class="btn-logout" onclick="logout()">⏻ Logout</button>
   </div>
 </div>
-
-<!-- MAIN -->
+ 
 <div class="main">
-
+ 
   <!-- DASHBOARD -->
   <div class="page-section active" id="page-dashboard">
-    <div class="topbar">
-      <div><div class="page-title">My Dashboard</div><div class="page-sub">// Academic overview</div></div>
-    </div>
-    <div class="welcome-banner">
-      <div class="welcome-text">
-        <h2>Welcome back, <span id="welcome-name" style="color:var(--green)">John</span> 👋</h2>
-        <p>Reg No: <span id="welcome-reg" style="color:var(--accent);font-family:var(--font-mono)">21CS047</span> · Computer Science · Semester 5</p>
-      </div>
-      <div class="welcome-stats">
-        <div class="w-stat"><div class="w-stat-num">10</div><div class="w-stat-label">Credits Earned</div></div>
-        <div class="w-stat"><div class="w-stat-num">3</div><div class="w-stat-label">Courses</div></div>
-        <div class="w-stat"><div class="w-stat-num">8.7</div><div class="w-stat-label">CGPA</div></div>
-      </div>
-    </div>
+    <div class="topbar"><div><div class="page-title">Welcome, <span id="welcome-name">Student</span>!</div><div class="page-sub" id="welcome-reg">// Loading...</div></div></div>
     <div class="stats-grid">
-      <div class="stat-card"><div class="stat-icon">📚</div><div class="stat-num">3</div><div class="stat-label">Courses Completed</div></div>
-      <div class="stat-card"><div class="stat-icon">⭐</div><div class="stat-num">8.7</div><div class="stat-label">Current CGPA</div></div>
-      <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-num">3/3</div><div class="stat-label">Blockchain Verified</div></div>
+      <div class="stat-card"><div class="stat-icon">⭐</div><div class="w-stat-num" id="dash-credits">0</div><div class="stat-label">Total Credits</div></div>
+      <div class="stat-card"><div class="stat-icon">📚</div><div class="w-stat-num" id="dash-courses">0</div><div class="stat-label">Courses Completed</div></div>
+      <div class="stat-card"><div class="stat-icon">🎯</div><div class="w-stat-num" id="dash-cgpa">0.0</div><div class="stat-label">Current CGPA</div></div>
     </div>
     <div class="section-card">
-      <div class="section-header"><h3>Recent Results</h3><span>Latest credits issued</span></div>
-      <table>
-        <thead><tr><th>Course</th><th>Grade</th><th>Credits</th><th>Blockchain Proof</th></tr></thead>
-        <tbody>
-          <tr>
-            <td><strong>Database Mgmt Systems</strong><div style="font-size:0.78rem;color:var(--muted);font-family:var(--font-mono)">CS301</div></td>
-            <td><span class="badge badge-green">A+</span></td>
-            <td><span style="font-family:var(--font-mono);font-weight:700;color:var(--accent)">4</span></td>
-            <td><a href="https://sepolia.etherscan.io/tx/0x3f4a8c2d" target="_blank" class="verify-btn">✅ Verified ↗</a></td>
-          </tr>
-          <tr>
-            <td><strong>Operating Systems</strong><div style="font-size:0.78rem;color:var(--muted);font-family:var(--font-mono)">CS302</div></td>
-            <td><span class="badge badge-blue">A</span></td>
-            <td><span style="font-family:var(--font-mono);font-weight:700;color:var(--accent)">3</span></td>
-            <td><a href="https://sepolia.etherscan.io/tx/0x9b2c1a4e" target="_blank" class="verify-btn">✅ Verified ↗</a></td>
-          </tr>
-          <tr>
-            <td><strong>Computer Networks</strong><div style="font-size:0.78rem;color:var(--muted);font-family:var(--font-mono)">CS303</div></td>
-            <td><span class="badge badge-yellow">B+</span></td>
-            <td><span style="font-family:var(--font-mono);font-weight:700;color:var(--accent)">3</span></td>
-            <td><a href="https://sepolia.etherscan.io/tx/0x7d1e3f2c" target="_blank" class="verify-btn">✅ Verified ↗</a></td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="section-header"><h3>Recent Credits</h3><span>Latest issued</span></div>
+      <table><thead><tr><th>Course</th><th>Grade</th><th>Credits</th><th>Blockchain</th></tr></thead>
+      <tbody id="dash-table"><tr><td colspan="4" class="msg">Loading...</td></tr></tbody></table>
     </div>
   </div>
-
+ 
   <!-- MY RESULTS -->
   <div class="page-section" id="page-results">
-    <div class="topbar">
-      <div><div class="page-title">My Results</div><div class="page-sub">// All academic credits & grades</div></div>
+    <div class="topbar"><div><div class="page-title">My Results</div><div class="page-sub">// All issued academic credits</div></div></div>
+    <div class="section-card">
+      <div class="section-header"><h3>Credit Records</h3><span id="results-count">Loading...</span></div>
+      <table><thead><tr><th>Course Code</th><th>Course Name</th><th>Credits</th><th>Grade</th><th>Blockchain Proof</th></tr></thead>
+      <tbody id="results-table"><tr><td colspan="5" class="msg">Loading...</td></tr></tbody></table>
     </div>
-    <div class="cgpa-section">
-      <div class="cgpa-card">
-        <div style="font-family:var(--font-mono);font-size:0.7rem;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:1rem">CGPA</div>
-        <div class="cgpa-ring">
-          <svg width="120" height="120" viewBox="0 0 120 120">
-            <circle class="bg" cx="60" cy="60" r="50"/>
-            <circle class="fg" cx="60" cy="60" r="50"/>
-          </svg>
-          <div class="cgpa-value">8.7</div>
-        </div>
-        <div class="cgpa-label">Out of 10.0</div>
-        <div style="margin-top:1rem;font-family:var(--font-mono);font-size:0.75rem;color:var(--green)">● Excellent</div>
-      </div>
-      <div class="section-card" style="margin-bottom:0">
-        <div class="section-header"><h3>Credit Summary</h3><span>Semester 5</span></div>
-        <table>
-          <thead><tr><th>Code</th><th>Course Name</th><th>Credits</th><th>Grade</th><th>Points</th></tr></thead>
-          <tbody>
-            <tr><td><span class="badge badge-blue">CS301</span></td><td>Database Mgmt Systems</td><td>4</td><td><span class="badge badge-green">A+</span></td><td style="font-family:var(--font-mono);color:var(--green)">10 × 4 = 40</td></tr>
-            <tr><td><span class="badge badge-blue">CS302</span></td><td>Operating Systems</td><td>3</td><td><span class="badge badge-blue">A</span></td><td style="font-family:var(--font-mono);color:var(--accent)">9 × 3 = 27</td></tr>
-            <tr><td><span class="badge badge-blue">CS303</span></td><td>Computer Networks</td><td>3</td><td><span class="badge badge-yellow">B+</span></td><td style="font-family:var(--font-mono);color:#f59e0b">8 × 3 = 24</td></tr>
-            <tr style="background:rgba(0,255,157,0.04)">
-              <td colspan="2"><strong>Total</strong></td>
-              <td><strong style="font-family:var(--font-mono);color:var(--green)">10</strong></td>
-              <td>—</td>
-              <td><strong style="font-family:var(--font-mono);color:var(--green)">91 / 100</strong></td>
-            </tr>
-          </tbody>
-        </table>
+  </div>
+ 
+  <!-- CGPA -->
+  <div class="page-section" id="page-cgpa">
+    <div class="topbar"><div><div class="page-title">CGPA Calculator</div><div class="page-sub">// Your academic performance</div></div></div>
+    <div class="section-card">
+      <div class="cgpa-display">
+        <div class="cgpa-value" id="cgpa-value">0.0</div>
+        <div class="cgpa-label">CUMULATIVE GRADE POINT AVERAGE</div>
       </div>
     </div>
     <div class="section-card">
-      <div class="section-header"><h3>Blockchain Verification</h3><span>All records verified on Ethereum Sepolia</span></div>
-      <table>
-        <thead><tr><th>Course</th><th>Transaction Hash</th><th>Network</th><th>Status</th><th>Action</th></tr></thead>
-        <tbody>
-          <tr>
-            <td>DBMS</td>
-            <td style="font-family:var(--font-mono);font-size:0.72rem;color:var(--muted)">0x3f4a8c2d1e9b7f6a2c4d8e1f...</td>
-            <td><span class="badge badge-purple">Sepolia</span></td>
-            <td><span class="badge badge-green">● Confirmed</span></td>
-            <td><a href="https://sepolia.etherscan.io/tx/0x3f4a" target="_blank" class="verify-btn">View on Etherscan ↗</a></td>
-          </tr>
-          <tr>
-            <td>OS</td>
-            <td style="font-family:var(--font-mono);font-size:0.72rem;color:var(--muted)">0x9b2c1a4e7d3f8b2e5c1a4d7e...</td>
-            <td><span class="badge badge-purple">Sepolia</span></td>
-            <td><span class="badge badge-green">● Confirmed</span></td>
-            <td><a href="https://sepolia.etherscan.io/tx/0x9b2c" target="_blank" class="verify-btn">View on Etherscan ↗</a></td>
-          </tr>
-          <tr>
-            <td>Networks</td>
-            <td style="font-family:var(--font-mono);font-size:0.72rem;color:var(--muted)">0x7d1e3f2c9a5b8d4e1c3f7a2b...</td>
-            <td><span class="badge badge-purple">Sepolia</span></td>
-            <td><span class="badge badge-green">● Confirmed</span></td>
-            <td><a href="https://sepolia.etherscan.io/tx/0x7d1e" target="_blank" class="verify-btn">View on Etherscan ↗</a></td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="section-header"><h3>Grade Breakdown</h3></div>
+      <table><thead><tr><th>Course</th><th>Grade</th><th>Credits</th><th>Grade Points</th></tr></thead>
+      <tbody id="cgpa-table"><tr><td colspan="4" class="msg">Loading...</td></tr></tbody></table>
     </div>
   </div>
-
-  <!-- VERIFY PAGE -->
+ 
+  <!-- VERIFY HASH -->
   <div class="page-section" id="page-verify">
-    <div class="topbar">
-      <div><div class="page-title">Verify Credential</div><div class="page-sub">// Check any transaction on the blockchain</div></div>
-    </div>
-    <div class="section-card" style="max-width:600px">
-      <div class="section-header"><h3>Transaction Hash Lookup</h3></div>
-      <div style="padding:1.5rem">
-        <p style="color:var(--muted);font-size:0.9rem;margin-bottom:1.5rem;line-height:1.7">
-          Every credit issued in this system is recorded on the Ethereum Sepolia Testnet. Enter a transaction hash below to verify it.
-        </p>
-        <div style="margin-bottom:1rem">
-          <label style="display:block;font-family:var(--font-mono);font-size:0.72rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:0.5rem">Transaction Hash</label>
-          <input type="text" id="verify-input" placeholder="0x3f4a8c2d..." style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:0.85rem 1rem;color:var(--text);font-family:var(--font-mono);font-size:0.85rem;outline:none;transition:border-color 0.2s"/>
+    <div class="topbar"><div><div class="page-title">Verify on Blockchain</div><div class="page-sub">// Verify any transaction hash</div></div></div>
+    <div class="section-card">
+      <div class="section-header"><h3>Transaction Hash Verifier</h3></div>
+      <div class="verify-box">
+        <div class="verify-input-row">
+          <input type="text" id="verify-input" placeholder="Paste transaction hash: 0x..."/>
+          <button class="btn-verify" onclick="verifyHash()">Verify →</button>
         </div>
-        <button onclick="verifyHash()" style="width:100%;background:var(--green);color:var(--bg);border:none;border-radius:8px;padding:0.9rem;font-family:var(--font-mono);font-size:0.9rem;font-weight:700;cursor:pointer;transition:all 0.2s">
-          🔍 Verify on Blockchain
-        </button>
-        <div id="verify-result" style="display:none;margin-top:1.5rem">
-          <div style="background:rgba(0,255,157,0.07);border:1px solid rgba(0,255,157,0.2);border-radius:12px;padding:1.5rem">
-            <div style="font-family:var(--font-mono);font-size:0.7rem;color:var(--green);letter-spacing:2px;text-transform:uppercase;margin-bottom:1rem">✅ Verification Successful</div>
-            <div style="display:grid;gap:0.8rem">
-              <div style="display:flex;justify-content:space-between"><span style="color:var(--muted);font-size:0.85rem">Student ID</span><span style="font-family:var(--font-mono);font-size:0.85rem;color:var(--accent)">21CS047</span></div>
-              <div style="display:flex;justify-content:space-between"><span style="color:var(--muted);font-size:0.85rem">Course</span><span style="font-size:0.85rem;font-weight:700">Database Mgmt Systems</span></div>
-              <div style="display:flex;justify-content:space-between"><span style="color:var(--muted);font-size:0.85rem">Grade</span><span class="badge badge-green">A+</span></div>
-              <div style="display:flex;justify-content:space-between"><span style="color:var(--muted);font-size:0.85rem">Credits</span><span style="font-family:var(--font-mono);color:var(--green);font-weight:700">4</span></div>
-              <div style="display:flex;justify-content:space-between"><span style="color:var(--muted);font-size:0.85rem">Network</span><span class="badge badge-purple">Ethereum Sepolia</span></div>
-              <div style="display:flex;justify-content:space-between;align-items:center"><span style="color:var(--muted);font-size:0.85rem">Block</span><span style="font-family:var(--font-mono);font-size:0.8rem">#4821947</span></div>
-            </div>
-            <a id="etherscan-link" href="https://sepolia.etherscan.io" target="_blank" class="verify-btn" style="display:inline-flex;margin-top:1.2rem;width:100%;justify-content:center">
-              🔗 View Full Details on Etherscan ↗
-            </a>
-          </div>
+        <div class="verify-result" id="verify-result">
+          ✅ Record found on blockchain!<br/><br/>
+          <span id="verify-details"></span><br/>
+          <a id="etherscan-link" href="#" target="_blank" style="color:var(--accent)">View on Etherscan ↗</a>
         </div>
       </div>
     </div>
   </div>
-
-  <!-- PROFILE PAGE -->
+ 
+  <!-- PROFILE -->
   <div class="page-section" id="page-profile">
-    <div class="topbar">
-      <div><div class="page-title">My Profile</div><div class="page-sub">// Personal information</div></div>
-    </div>
-    <div class="profile-grid">
-      <div class="profile-avatar-card">
-        <div class="big-avatar">J</div>
-        <div class="profile-name" id="p-name">John Doe</div>
-        <div class="profile-reg" id="p-reg">21CS047</div>
-        <div class="profile-dept">Computer Science</div>
-        <div style="margin-top:1.5rem;padding:0.8rem;background:rgba(0,255,157,0.06);border:1px solid rgba(0,255,157,0.15);border-radius:8px;font-family:var(--font-mono);font-size:0.72rem;color:var(--green)">
-          ● Account Active
-        </div>
-      </div>
-      <div class="profile-details">
-        <div style="font-family:var(--font-mono);font-size:0.7rem;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:1.2rem">Student Information</div>
-        <div class="detail-row"><span class="detail-label">Full Name</span><span class="detail-value" id="p-fullname">John Doe</span></div>
-        <div class="detail-row"><span class="detail-label">Register Number</span><span class="detail-value" style="font-family:var(--font-mono);color:var(--accent)">21CS047</span></div>
-        <div class="detail-row"><span class="detail-label">Email</span><span class="detail-value" style="font-family:var(--font-mono);font-size:0.82rem">student@acadchain.com</span></div>
-        <div class="detail-row"><span class="detail-label">Department</span><span class="detail-value">Computer Science Engineering</span></div>
-        <div class="detail-row"><span class="detail-label">Current Semester</span><span class="detail-value">Semester 5</span></div>
-        <div class="detail-row"><span class="detail-label">CGPA</span><span class="detail-value" style="color:var(--green);font-family:var(--font-mono)">8.7 / 10.0</span></div>
-        <div class="detail-row"><span class="detail-label">Credits Earned</span><span class="detail-value" style="color:var(--accent);font-family:var(--font-mono)">10 Credits</span></div>
+    <div class="topbar"><div><div class="page-title">My Profile</div><div class="page-sub">// Your account details</div></div></div>
+    <div class="section-card" style="max-width:500px">
+      <div class="section-header"><h3>Student Information</h3></div>
+      <div style="padding:1.5rem">
+        <div class="detail-row"><span class="detail-label">Full Name</span><span class="detail-value" id="p-name">-</span></div>
+        <div class="detail-row"><span class="detail-label">Register Number</span><span class="detail-value" style="font-family:var(--font-mono);color:var(--accent)" id="p-regno">-</span></div>
+        <div class="detail-row"><span class="detail-label">Email</span><span class="detail-value" style="font-family:var(--font-mono);font-size:0.82rem" id="p-email">-</span></div>
+        <div class="detail-row"><span class="detail-label">Department</span><span class="detail-value" id="p-dept">-</span></div>
+        <div class="detail-row"><span class="detail-label">Semester</span><span class="detail-value" id="p-sem">-</span></div>
       </div>
     </div>
   </div>
-
+ 
 </div>
-
 <script>
-  const user = JSON.parse(sessionStorage.getItem('user') || '{"name":"John Doe","role":"STUDENT","regNo":"21CS047"}');
-  const firstName = (user.name || 'John').split(' ')[0];
-
-  document.getElementById('s-name').textContent = user.name || 'John Doe';
-  document.getElementById('s-reg').textContent = user.regNo || '21CS047';
+  const API = 'http://localhost:8080';
+  const user = JSON.parse(localStorage.getItem('acadchain_user') || '{}');
+  const userId = user.id || null;
+ 
+  // Set sidebar info
+  const firstName = (user.name||'Student').split(' ')[0];
+  document.getElementById('s-name').textContent = user.name || 'Student';
+  document.getElementById('s-reg').textContent = user.registerNumber || '';
   document.getElementById('s-avatar').textContent = firstName[0].toUpperCase();
   document.getElementById('welcome-name').textContent = firstName;
-  document.getElementById('welcome-reg').textContent = user.regNo || '21CS047';
-  document.getElementById('p-name').textContent = user.name || 'John Doe';
-  document.getElementById('p-fullname').textContent = user.name || 'John Doe';
-  document.getElementById('p-reg').textContent = user.regNo || '21CS047';
-
-  function showPage(name, el) {
-    document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    document.getElementById('page-' + name).classList.add('active');
-    if (el) el.classList.add('active');
+  document.getElementById('welcome-reg').textContent = '// ' + (user.registerNumber||'');
+  document.getElementById('p-name').textContent = user.name || '-';
+  document.getElementById('p-regno').textContent = user.registerNumber || '-';
+  document.getElementById('p-email').textContent = user.email || '-';
+  document.getElementById('p-dept').textContent = user.department || '-';
+  document.getElementById('p-sem').textContent = user.semester ? 'Semester ' + user.semester : '-';
+ 
+  function showPage(name,el){
+    document.querySelectorAll('.page-section').forEach(s=>s.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+    document.getElementById('page-'+name).classList.add('active');
+    if(el)el.classList.add('active');
   }
-
-  function verifyHash() {
+ 
+  function gradePoint(g){return{O:10,'A+':9,A:8,'B+':7,B:6,C:5}[g]||0;}
+ 
+  function loadMyCredits(){
+    if(!userId){
+      document.getElementById('dash-table').innerHTML='<tr><td colspan="4" class="msg">Please login again</td></tr>';
+      return;
+    }
+    fetch(API+'/api/student/credits?userId='+userId,{credentials:'include'})
+    .then(r=>r.json())
+    .then(data=>{
+      if(!data.success){
+        document.getElementById('dash-table').innerHTML='<tr><td colspan="4" class="msg">No credits yet</td></tr>';
+        return;
+      }
+      const credits = data.credits || [];
+      // Update stats
+      document.getElementById('dash-credits').textContent = data.totalCredits||0;
+      document.getElementById('dash-courses').textContent = data.totalCourses||0;
+      document.getElementById('dash-cgpa').textContent = data.cgpa||'0.0';
+      document.getElementById('cgpa-value').textContent = data.cgpa||'0.0';
+      document.getElementById('results-count').textContent = credits.length+' records';
+ 
+      // Dashboard table
+      const dt = document.getElementById('dash-table');
+      if(!credits.length){dt.innerHTML='<tr><td colspan="4" class="msg">No credits issued yet</td></tr>';}
+      else{dt.innerHTML=credits.slice(0,5).map(c=>`<tr><td><strong>${c.courseName||''}</strong><div style="font-size:0.78rem;color:var(--muted);font-family:var(--font-mono)">${c.courseCode||''}</div></td><td><span class="badge badge-green">${c.grade||''}</span></td><td><span style="font-family:var(--font-mono);font-weight:700;color:var(--accent)">${c.creditsEarned||''}</span></td><td>${c.transactionHash?`<a href="https://sepolia.etherscan.io/tx/${c.transactionHash}" target="_blank" class="verify-btn">✅ Verified ↗</a>`:'<span style="color:var(--muted);font-size:0.8rem">Pending</span>'}</td></tr>`).join('');}
+ 
+      // Results table
+      const rt = document.getElementById('results-table');
+      if(!credits.length){rt.innerHTML='<tr><td colspan="5" class="msg">No credits issued yet</td></tr>';}
+      else{rt.innerHTML=credits.map(c=>`<tr><td><span class="badge badge-blue">${c.courseCode||''}</span></td><td>${c.courseName||''}</td><td>${c.creditsEarned||''}</td><td><span class="badge badge-green">${c.grade||''}</span></td><td>${c.transactionHash?`<a href="https://sepolia.etherscan.io/tx/${c.transactionHash}" target="_blank" class="verify-btn">View ↗</a>`:'<span style="color:var(--muted)">Pending</span>'}</td></tr>`).join('');}
+ 
+      // CGPA table
+      const ct = document.getElementById('cgpa-table');
+      if(!credits.length){ct.innerHTML='<tr><td colspan="4" class="msg">No credits yet</td></tr>';}
+      else{ct.innerHTML=credits.map(c=>`<tr><td>${c.courseName||''}</td><td><span class="badge badge-green">${c.grade||''}</span></td><td>${c.creditsEarned||''}</td><td style="font-family:var(--font-mono);color:var(--accent)">${gradePoint(c.grade)}</td></tr>`).join('');}
+    })
+    .catch(()=>{
+      document.getElementById('dash-table').innerHTML='<tr><td colspan="4" style="text-align:center;color:#ff4d6d;padding:2rem;font-family:var(--font-mono)">❌ Cannot connect. Is Spring Boot running?</td></tr>';
+    });
+  }
+ 
+  function verifyHash(){
     const hash = document.getElementById('verify-input').value.trim();
-    if (!hash) return;
-    // TODO: Call Spring Boot API to verify → GET /api/student/verify/{hash}
-    document.getElementById('verify-result').style.display = 'block';
-    document.getElementById('etherscan-link').href = 'https://sepolia.etherscan.io/tx/' + hash;
+    const result = document.getElementById('verify-result');
+    if(!hash){alert('Please enter a transaction hash');return;}
+    result.style.display='none';
+    fetch(API+'/api/student/verify/'+encodeURIComponent(hash),{credentials:'include'})
+    .then(r=>r.json())
+    .then(data=>{
+      if(data.success){
+        document.getElementById('verify-details').textContent =
+          'Student: '+data.studentName+' ('+data.registerNumber+')\n'+
+          'Course: '+data.courseName+' ('+data.courseCode+')\n'+
+          'Grade: '+data.grade+' | Credits: '+data.creditsEarned;
+        document.getElementById('etherscan-link').href='https://sepolia.etherscan.io/tx/'+hash;
+        result.style.display='block';
+      } else {
+        alert('❌ '+data.message);
+      }
+    }).catch(()=>alert('❌ Cannot connect to server!'));
   }
-
-  function logout() {
-    sessionStorage.clear();
-    window.location.href = 'login.html';
+ 
+  function logout(){
+    fetch(API+'/api/auth/logout',{method:'POST',credentials:'include'}).catch(()=>{});
+    localStorage.removeItem('acadchain_user');
+    window.location.href='login.html';
   }
+ 
+  window.onload = function(){ loadMyCredits(); }
 </script>
 </body>
 </html>

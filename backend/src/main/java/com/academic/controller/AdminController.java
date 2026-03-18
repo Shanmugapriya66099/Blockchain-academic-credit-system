@@ -11,117 +11,83 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/admin")
-@CrossOrigin(origins = "*")
+@CrossOrigin(originPatterns = "*")
 public class AdminController {
 
     @Autowired
     private AdminService adminService;
 
     @GetMapping("/dashboard")
-    public ResponseEntity<Map<String, Object>> getDashboard(
-            HttpSession session) {
-        if (!isAdmin(session)) return unauthorized();
+    public ResponseEntity<Map<String, Object>> getDashboard() {
         return ResponseEntity.ok(adminService.getDashboardStats());
     }
 
     @PostMapping("/students")
     public ResponseEntity<Map<String, Object>> addStudent(
-            @RequestBody Map<String, Object> body,
-            HttpSession session) {
-        if (!isAdmin(session)) return unauthorized();
+            @RequestBody Map<String, Object> body) {
         Map<String, Object> result = adminService.addStudent(
                 (String) body.get("name"),
                 (String) body.get("email"),
                 (String) body.get("password"),
                 (String) body.get("registerNumber"),
                 (String) body.get("department"),
-                (Integer) body.get("semester")
+                body.get("semester") != null ? Integer.valueOf(body.get("semester").toString()) : 1
         );
-        return (Boolean) result.get("success") ?
-                ResponseEntity.ok(result) :
-                ResponseEntity.badRequest().body(result);
+        return result.get("success").equals(true) ?
+                ResponseEntity.ok(result) : ResponseEntity.badRequest().body(result);
     }
 
     @GetMapping("/students")
-    public ResponseEntity<List<Map<String, Object>>> getAllStudents(
-            HttpSession session) {
-        if (!isAdmin(session))
-            return ResponseEntity.status(403).build();
+    public ResponseEntity<List<Map<String, Object>>> getAllStudents() {
         return ResponseEntity.ok(adminService.getAllStudents());
     }
 
     @PostMapping("/courses")
     public ResponseEntity<Map<String, Object>> addCourse(
-            @RequestBody Map<String, Object> body,
-            HttpSession session) {
-        if (!isAdmin(session)) return unauthorized();
+            @RequestBody Map<String, Object> body) {
         Map<String, Object> result = adminService.addCourse(
                 (String) body.get("courseCode"),
                 (String) body.get("courseName"),
-                (Integer) body.get("maxCredits"),
+                body.get("maxCredits") != null ? Integer.valueOf(body.get("maxCredits").toString()) : 4,
                 (String) body.get("department")
         );
-        return (Boolean) result.get("success") ?
-                ResponseEntity.ok(result) :
-                ResponseEntity.badRequest().body(result);
+        return result.get("success").equals(true) ?
+                ResponseEntity.ok(result) : ResponseEntity.badRequest().body(result);
     }
 
     @GetMapping("/courses")
-    public ResponseEntity<?> getAllCourses(HttpSession session) {
-        if (!isAdmin(session))
-            return ResponseEntity.status(403).build();
+    public ResponseEntity<?> getAllCourses() {
         return ResponseEntity.ok(adminService.getAllCourses());
     }
 
     @PostMapping("/credits/issue")
     public ResponseEntity<Map<String, Object>> issueCredit(
-            @RequestBody Map<String, Object> body,
-            HttpSession session) {
-        if (!isAdmin(session)) return unauthorized();
-        Long adminId = (Long) session.getAttribute("userId");
+            @RequestBody Map<String, Object> body) {
         Map<String, Object> result = adminService.issueCredit(
                 Long.valueOf(body.get("studentId").toString()),
                 Long.valueOf(body.get("courseId").toString()),
                 (String) body.get("grade"),
-                (Integer) body.get("creditsEarned"),
+                body.get("creditsEarned") != null ? Integer.valueOf(body.get("creditsEarned").toString()) : 4,
                 (String) body.get("transactionHash"),
-                adminId
+                1L
         );
-        return (Boolean) result.get("success") ?
-                ResponseEntity.ok(result) :
-                ResponseEntity.badRequest().body(result);
+        return result.get("success").equals(true) ?
+                ResponseEntity.ok(result) : ResponseEntity.badRequest().body(result);
     }
 
     @PutMapping("/credits/hash")
     public ResponseEntity<Map<String, Object>> updateHash(
-            @RequestBody Map<String, Object> body,
-            HttpSession session) {
-        if (!isAdmin(session)) return unauthorized();
+            @RequestBody Map<String, Object> body) {
         Map<String, Object> result = adminService.updateTransactionHash(
                 Long.valueOf(body.get("creditId").toString()),
                 (String) body.get("transactionHash")
         );
-        return (Boolean) result.get("success") ?
-                ResponseEntity.ok(result) :
-                ResponseEntity.badRequest().body(result);
+        return result.get("success").equals(true) ?
+                ResponseEntity.ok(result) : ResponseEntity.badRequest().body(result);
     }
 
     @GetMapping("/credits")
-    public ResponseEntity<List<Map<String, Object>>> getAllCredits(
-            HttpSession session) {
-        if (!isAdmin(session))
-            return ResponseEntity.status(403).build();
+    public ResponseEntity<List<Map<String, Object>>> getAllCredits() {
         return ResponseEntity.ok(adminService.getAllIssuedCredits());
-    }
-
-    private boolean isAdmin(HttpSession session) {
-        String role = (String) session.getAttribute("userRole");
-        return "ADMIN".equals(role);
-    }
-
-    private ResponseEntity<Map<String, Object>> unauthorized() {
-        return ResponseEntity.status(403).body(
-                Map.of("success", false,
-                        "message", "Access denied. Admins only."));
     }
 }

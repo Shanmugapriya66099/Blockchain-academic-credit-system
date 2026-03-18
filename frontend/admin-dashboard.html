@@ -6,124 +6,91 @@
   <title>Admin Dashboard — AcadChain</title>
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
   <style>
-    :root {
-      --bg: #0a0e1a; --surface: #111827; --card: #1a2235;
-      --border: #1e3a5f; --accent: #00d4ff; --accent2: #7c3aed;
-      --green: #00ff9d; --text: #e2e8f0; --muted: #64748b;
-      --font-head: 'Syne', sans-serif; --font-mono: 'Space Mono', monospace;
-    }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: var(--bg); color: var(--text); font-family: var(--font-head); display: flex; min-height: 100vh; }
-
-    /* SIDEBAR */
-    .sidebar {
-      width: 250px; background: var(--surface); border-right: 1px solid var(--border);
-      display: flex; flex-direction: column; padding: 1.5rem 0; position: fixed; height: 100vh; z-index: 10;
-    }
-    .sidebar-logo { font-family: var(--font-mono); font-size: 1.2rem; font-weight: 700; color: var(--accent); padding: 0 1.5rem 1.5rem; border-bottom: 1px solid var(--border); }
-    .sidebar-logo span { color: var(--green); }
-    .sidebar-role { font-family: var(--font-mono); font-size: 0.65rem; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; padding: 1.2rem 1.5rem 0.5rem; }
-    .sidebar-nav { flex: 1; padding: 0.5rem 0; }
-    .nav-item {
-      display: flex; align-items: center; gap: 0.8rem; padding: 0.8rem 1.5rem;
-      color: var(--muted); text-decoration: none; font-size: 0.9rem; font-weight: 600;
-      transition: all 0.2s; cursor: pointer; border: none; background: none; width: 100%; text-align: left;
-    }
-    .nav-item:hover, .nav-item.active { color: var(--text); background: rgba(0,212,255,0.07); border-right: 3px solid var(--accent); }
-    .nav-item.active { color: var(--accent); }
-    .nav-icon { font-size: 1.1rem; width: 20px; }
-    .sidebar-bottom { padding: 1rem 1.5rem; border-top: 1px solid var(--border); }
-    .admin-info { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1rem; }
-    .admin-avatar { width: 36px; height: 36px; background: linear-gradient(135deg, var(--accent), var(--accent2)); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; color: white; }
-    .admin-name { font-size: 0.85rem; font-weight: 700; }
-    .admin-role { font-family: var(--font-mono); font-size: 0.65rem; color: var(--accent); }
-    .btn-logout { width: 100%; background: transparent; border: 1px solid var(--border); border-radius: 6px; padding: 0.6rem; color: var(--muted); font-family: var(--font-mono); font-size: 0.75rem; cursor: pointer; transition: all 0.2s; }
-    .btn-logout:hover { border-color: #ff4d6d; color: #ff4d6d; }
-
-    /* MAIN */
-    .main { margin-left: 250px; flex: 1; padding: 2rem; }
-    .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
-    .page-title { font-size: 1.8rem; font-weight: 800; letter-spacing: -1px; }
-    .page-sub { color: var(--muted); font-size: 0.85rem; margin-top: 0.2rem; font-family: var(--font-mono); }
-    .topbar-right { display: flex; gap: 0.8rem; }
-    .btn-sm {
-      background: var(--accent); color: var(--bg); border: none; border-radius: 6px;
-      padding: 0.6rem 1.2rem; font-family: var(--font-mono); font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: all 0.2s;
-    }
-    .btn-sm:hover { background: var(--green); }
-
-    /* STATS GRID */
-    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.2rem; margin-bottom: 2rem; }
-    .stat-card {
-      background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem;
-      position: relative; overflow: hidden; transition: transform 0.2s;
-    }
-    .stat-card:hover { transform: translateY(-2px); }
-    .stat-card::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
-    .stat-card:nth-child(1)::after { background: var(--accent); }
-    .stat-card:nth-child(2)::after { background: var(--green); }
-    .stat-card:nth-child(3)::after { background: var(--accent2); }
-    .stat-card:nth-child(4)::after { background: #f59e0b; }
-    .stat-icon { font-size: 1.8rem; margin-bottom: 0.8rem; }
-    .stat-num { font-family: var(--font-mono); font-size: 2rem; font-weight: 700; }
-    .stat-label { color: var(--muted); font-size: 0.8rem; margin-top: 0.2rem; }
-
-    /* TABLE */
-    .section-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 1.5rem; }
-    .section-header { padding: 1.2rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-    .section-header h3 { font-size: 1rem; font-weight: 700; }
-    .section-header span { font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted); }
-    table { width: 100%; border-collapse: collapse; }
-    th { padding: 0.8rem 1.5rem; text-align: left; font-family: var(--font-mono); font-size: 0.7rem; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; border-bottom: 1px solid var(--border); }
-    td { padding: 1rem 1.5rem; font-size: 0.88rem; border-bottom: 1px solid rgba(30,58,95,0.4); }
-    tr:last-child td { border-bottom: none; }
-    tr:hover td { background: rgba(0,212,255,0.03); }
-    .badge {
-      display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.25rem 0.7rem;
-      border-radius: 100px; font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700;
-    }
-    .badge-green { background: rgba(0,255,157,0.1); color: var(--green); border: 1px solid rgba(0,255,157,0.2); }
-    .badge-blue { background: rgba(0,212,255,0.1); color: var(--accent); border: 1px solid rgba(0,212,255,0.2); }
-    .badge-yellow { background: rgba(245,158,11,0.1); color: #f59e0b; border: 1px solid rgba(245,158,11,0.2); }
-    .hash-link { font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent); text-decoration: none; }
-    .hash-link:hover { color: var(--green); }
-    .action-btn { background: transparent; border: 1px solid var(--border); border-radius: 4px; padding: 0.3rem 0.7rem; color: var(--muted); font-family: var(--font-mono); font-size: 0.7rem; cursor: pointer; transition: all 0.2s; }
-    .action-btn:hover { border-color: var(--accent); color: var(--accent); }
-
-    /* PAGE SECTIONS (hidden by default) */
-    .page-section { display: none; }
-    .page-section.active { display: block; }
-
-    /* MODALS */
-    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(10,14,26,0.9); z-index: 50; align-items: center; justify-content: center; }
-    .modal-overlay.show { display: flex; }
-    .modal { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; width: 100%; max-width: 480px; position: relative; }
-    .modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 16px 16px 0 0; }
-    .modal h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: 0.3rem; }
-    .modal-sub { color: var(--muted); font-size: 0.85rem; margin-bottom: 1.5rem; }
-    .form-group { margin-bottom: 1rem; }
-    label { display: block; font-family: var(--font-mono); font-size: 0.7rem; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 0.4rem; }
-    input, select { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1rem; color: var(--text); font-family: var(--font-mono); font-size: 0.85rem; outline: none; transition: border-color 0.2s; }
-    input:focus, select:focus { border-color: var(--accent); }
-    select option { background: var(--surface); }
-    .modal-btns { display: flex; gap: 0.8rem; margin-top: 1.2rem; }
-    .btn-cancel { flex: 1; background: transparent; border: 1px solid var(--border); border-radius: 8px; padding: 0.8rem; color: var(--muted); font-family: var(--font-mono); font-size: 0.85rem; cursor: pointer; }
-    .btn-submit { flex: 2; background: var(--accent); border: none; border-radius: 8px; padding: 0.8rem; color: var(--bg); font-family: var(--font-mono); font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
-    .btn-submit:hover { background: var(--green); }
+    :root{--bg:#0a0e1a;--surface:#111827;--card:#1a2235;--border:#1e3a5f;--accent:#00d4ff;--accent2:#7c3aed;--green:#00ff9d;--text:#e2e8f0;--muted:#64748b;--font-head:'Syne',sans-serif;--font-mono:'Space Mono',monospace;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{background:var(--bg);color:var(--text);font-family:var(--font-head);display:flex;min-height:100vh;}
+    .sidebar{width:250px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:1.5rem 0;position:fixed;height:100vh;z-index:10;}
+    .sidebar-logo{font-family:var(--font-mono);font-size:1.2rem;font-weight:700;color:var(--accent);padding:0 1.5rem 1.5rem;border-bottom:1px solid var(--border);}
+    .sidebar-logo span{color:var(--green);}
+    .sidebar-role{font-family:var(--font-mono);font-size:0.65rem;color:var(--muted);letter-spacing:2px;text-transform:uppercase;padding:1.2rem 1.5rem 0.5rem;}
+    .sidebar-nav{flex:1;padding:0.5rem 0;}
+    .nav-item{display:flex;align-items:center;gap:0.8rem;padding:0.8rem 1.5rem;color:var(--muted);font-size:0.9rem;font-weight:600;transition:all 0.2s;cursor:pointer;border:none;background:none;width:100%;text-align:left;}
+    .nav-item:hover,.nav-item.active{color:var(--text);background:rgba(0,212,255,0.07);border-right:3px solid var(--accent);}
+    .nav-item.active{color:var(--accent);}
+    .nav-icon{font-size:1.1rem;width:20px;}
+    .sidebar-bottom{padding:1rem 1.5rem;border-top:1px solid var(--border);}
+    .admin-info{display:flex;align-items:center;gap:0.8rem;margin-bottom:1rem;}
+    .admin-avatar{width:36px;height:36px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.9rem;color:white;}
+    .admin-name{font-size:0.85rem;font-weight:700;}
+    .admin-role{font-family:var(--font-mono);font-size:0.65rem;color:var(--accent);}
+    .btn-logout{width:100%;background:transparent;border:1px solid var(--border);border-radius:6px;padding:0.6rem;color:var(--muted);font-family:var(--font-mono);font-size:0.75rem;cursor:pointer;transition:all 0.2s;}
+    .btn-logout:hover{border-color:#ff4d6d;color:#ff4d6d;}
+    .main{margin-left:250px;flex:1;padding:2rem;}
+    .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;}
+    .page-title{font-size:1.8rem;font-weight:800;letter-spacing:-1px;}
+    .page-sub{color:var(--muted);font-size:0.85rem;margin-top:0.2rem;font-family:var(--font-mono);}
+    .topbar-right{display:flex;gap:0.8rem;}
+    .btn-sm{background:var(--accent);color:var(--bg);border:none;border-radius:6px;padding:0.6rem 1.2rem;font-family:var(--font-mono);font-size:0.8rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
+    .btn-sm:hover{background:var(--green);}
+    .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem;margin-bottom:2rem;}
+    .stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.5rem;position:relative;overflow:hidden;transition:transform 0.2s;}
+    .stat-card:hover{transform:translateY(-2px);}
+    .stat-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+    .stat-card:nth-child(1)::after{background:var(--accent);}
+    .stat-card:nth-child(2)::after{background:var(--green);}
+    .stat-card:nth-child(3)::after{background:var(--accent2);}
+    .stat-card:nth-child(4)::after{background:#f59e0b;}
+    .stat-icon{font-size:1.8rem;margin-bottom:0.8rem;}
+    .stat-num{font-family:var(--font-mono);font-size:2rem;font-weight:700;}
+    .stat-label{color:var(--muted);font-size:0.8rem;margin-top:0.2rem;}
+    .section-card{background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:1.5rem;}
+    .section-header{padding:1.2rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+    .section-header h3{font-size:1rem;font-weight:700;}
+    .section-header span{font-family:var(--font-mono);font-size:0.75rem;color:var(--muted);}
+    table{width:100%;border-collapse:collapse;}
+    th{padding:0.8rem 1.5rem;text-align:left;font-family:var(--font-mono);font-size:0.7rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--border);}
+    td{padding:1rem 1.5rem;font-size:0.88rem;border-bottom:1px solid rgba(30,58,95,0.4);}
+    tr:last-child td{border-bottom:none;}
+    tr:hover td{background:rgba(0,212,255,0.03);}
+    .badge{display:inline-flex;align-items:center;gap:0.3rem;padding:0.25rem 0.7rem;border-radius:100px;font-family:var(--font-mono);font-size:0.7rem;font-weight:700;}
+    .badge-green{background:rgba(0,255,157,0.1);color:var(--green);border:1px solid rgba(0,255,157,0.2);}
+    .badge-blue{background:rgba(0,212,255,0.1);color:var(--accent);border:1px solid rgba(0,212,255,0.2);}
+    .badge-yellow{background:rgba(245,158,11,0.1);color:#f59e0b;border:1px solid rgba(245,158,11,0.2);}
+    .hash-link{font-family:var(--font-mono);font-size:0.72rem;color:var(--accent);text-decoration:none;}
+    .hash-link:hover{color:var(--green);}
+    .action-btn{background:transparent;border:1px solid var(--border);border-radius:4px;padding:0.3rem 0.7rem;color:var(--muted);font-family:var(--font-mono);font-size:0.7rem;cursor:pointer;transition:all 0.2s;}
+    .action-btn:hover{border-color:var(--accent);color:var(--accent);}
+    .page-section{display:none;}
+    .page-section.active{display:block;}
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(10,14,26,0.9);z-index:50;align-items:center;justify-content:center;}
+    .modal-overlay.show{display:flex;}
+    .modal{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2rem;width:100%;max-width:480px;position:relative;}
+    .modal::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:16px 16px 0 0;}
+    .modal h3{font-size:1.2rem;font-weight:800;margin-bottom:0.3rem;}
+    .modal-sub{color:var(--muted);font-size:0.85rem;margin-bottom:1.5rem;}
+    .form-group{margin-bottom:1rem;}
+    label{display:block;font-family:var(--font-mono);font-size:0.7rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:0.4rem;}
+    input,select{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:0.75rem 1rem;color:var(--text);font-family:var(--font-mono);font-size:0.85rem;outline:none;transition:border-color 0.2s;}
+    input:focus,select:focus{border-color:var(--accent);}
+    select option{background:var(--surface);}
+    .modal-btns{display:flex;gap:0.8rem;margin-top:1.2rem;}
+    .btn-cancel{flex:1;background:transparent;border:1px solid var(--border);border-radius:8px;padding:0.8rem;color:var(--muted);font-family:var(--font-mono);font-size:0.85rem;cursor:pointer;}
+    .btn-submit{flex:2;background:var(--accent);border:none;border-radius:8px;padding:0.8rem;color:var(--bg);font-family:var(--font-mono);font-size:0.85rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
+    .btn-submit:hover{background:var(--green);}
+    .msg{text-align:center;color:var(--muted);padding:2rem;font-family:var(--font-mono);font-size:0.85rem;}
+    .err{text-align:center;color:#ff4d6d;padding:2rem;font-family:var(--font-mono);font-size:0.85rem;}
   </style>
 </head>
 <body>
-
-<!-- SIDEBAR -->
 <div class="sidebar">
   <div class="sidebar-logo">Acad<span>Chain</span></div>
   <div class="sidebar-role">// Admin Panel</div>
   <nav class="sidebar-nav">
-    <button class="nav-item active" onclick="showPage('dashboard', this)"><span class="nav-icon">📊</span> Dashboard</button>
-    <button class="nav-item" onclick="showPage('students', this)"><span class="nav-icon">🎓</span> Students</button>
-    <button class="nav-item" onclick="showPage('courses', this)"><span class="nav-icon">📚</span> Courses</button>
-    <button class="nav-item" onclick="showPage('credits', this)"><span class="nav-icon">⛓</span> Issue Credits</button>
-    <button class="nav-item" onclick="showPage('records', this)"><span class="nav-icon">📋</span> All Records</button>
+    <button class="nav-item active" onclick="showPage('dashboard',this)"><span class="nav-icon">📊</span> Dashboard</button>
+    <button class="nav-item" onclick="showPage('students',this);loadStudents()"><span class="nav-icon">🎓</span> Students</button>
+    <button class="nav-item" onclick="showPage('courses',this);loadCourses()"><span class="nav-icon">📚</span> Courses</button>
+    <button class="nav-item" onclick="showPage('credits',this);loadDropdowns()"><span class="nav-icon">⛓</span> Issue Credits</button>
+    <button class="nav-item" onclick="showPage('records',this);loadRecords()"><span class="nav-icon">📋</span> All Records</button>
   </nav>
   <div class="sidebar-bottom">
     <div class="admin-info">
@@ -133,124 +100,61 @@
     <button class="btn-logout" onclick="logout()">⏻ Logout</button>
   </div>
 </div>
-
-<!-- MAIN -->
 <div class="main">
-
-  <!-- DASHBOARD PAGE -->
+ 
   <div class="page-section active" id="page-dashboard">
-    <div class="topbar">
-      <div><div class="page-title">Dashboard</div><div class="page-sub">// Overview of the system</div></div>
-    </div>
+    <div class="topbar"><div><div class="page-title">Dashboard</div><div class="page-sub">// Overview of the system</div></div></div>
     <div class="stats-grid">
-      <div class="stat-card"><div class="stat-icon">🎓</div><div class="stat-num">24</div><div class="stat-label">Total Students</div></div>
-      <div class="stat-card"><div class="stat-icon">📚</div><div class="stat-num">8</div><div class="stat-label">Courses</div></div>
-      <div class="stat-card"><div class="stat-icon">⛓</div><div class="stat-num">156</div><div class="stat-label">Credits Issued</div></div>
-      <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-num">142</div><div class="stat-label">Verified on Chain</div></div>
+      <div class="stat-card"><div class="stat-icon">🎓</div><div class="stat-num" id="stat-students">0</div><div class="stat-label">Total Students</div></div>
+      <div class="stat-card"><div class="stat-icon">📚</div><div class="stat-num" id="stat-courses">0</div><div class="stat-label">Courses</div></div>
+      <div class="stat-card"><div class="stat-icon">⛓</div><div class="stat-num" id="stat-credits">0</div><div class="stat-label">Credits Issued</div></div>
+      <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-num" id="stat-verified">0</div><div class="stat-label">Verified on Chain</div></div>
     </div>
     <div class="section-card">
       <div class="section-header"><h3>Recent Credit Issuances</h3><span>Latest 5 records</span></div>
-      <table>
-        <thead><tr><th>Student</th><th>Course</th><th>Grade</th><th>Credits</th><th>Blockchain</th><th>Date</th></tr></thead>
-        <tbody>
-          <tr><td>21CS047 — John Doe</td><td>DBMS</td><td><span class="badge badge-green">A+</span></td><td>4</td><td><a href="https://sepolia.etherscan.io" target="_blank" class="hash-link">0x3f4a...8c2d ↗</a></td><td>12 Jan 2024</td></tr>
-          <tr><td>21CS048 — Jane Smith</td><td>Operating Systems</td><td><span class="badge badge-blue">A</span></td><td>3</td><td><a href="https://sepolia.etherscan.io" target="_blank" class="hash-link">0x9b2c...1a4e ↗</a></td><td>12 Jan 2024</td></tr>
-          <tr><td>21CS049 — Alex Kumar</td><td>Networks</td><td><span class="badge badge-yellow">B+</span></td><td>3</td><td><a href="https://sepolia.etherscan.io" target="_blank" class="hash-link">0x7d1e...3f2c ↗</a></td><td>11 Jan 2024</td></tr>
-          <tr><td>21CS050 — Priya R</td><td>Algorithms</td><td><span class="badge badge-green">A</span></td><td>4</td><td><a href="https://sepolia.etherscan.io" target="_blank" class="hash-link">0x2a9f...7b3d ↗</a></td><td>10 Jan 2024</td></tr>
-          <tr><td>21CS051 — Ravi M</td><td>Software Engg</td><td><span class="badge badge-blue">A+</span></td><td>3</td><td><a href="https://sepolia.etherscan.io" target="_blank" class="hash-link">0x5c8a...2d1e ↗</a></td><td>09 Jan 2024</td></tr>
-        </tbody>
-      </table>
+      <table><thead><tr><th>Student</th><th>Course</th><th>Grade</th><th>Credits</th><th>Blockchain</th><th>Date</th></tr></thead>
+      <tbody id="recent-table"><tr><td colspan="6" class="msg">Loading...</td></tr></tbody></table>
     </div>
   </div>
-
-  <!-- STUDENTS PAGE -->
+ 
   <div class="page-section" id="page-students">
-    <div class="topbar">
-      <div><div class="page-title">Students</div><div class="page-sub">// Manage registered students</div></div>
-      <div class="topbar-right"><button class="btn-sm" onclick="openModal('modal-add-student')">+ Add Student</button></div>
-    </div>
+    <div class="topbar"><div><div class="page-title">Students</div><div class="page-sub">// Manage registered students</div></div>
+    <div class="topbar-right"><button class="btn-sm" onclick="openModal('modal-add-student')">+ Add Student</button></div></div>
     <div class="section-card">
-      <div class="section-header"><h3>All Students</h3><span id="student-count">24 students</span></div>
-      <table>
-        <thead><tr><th>Reg No</th><th>Name</th><th>Department</th><th>Semester</th><th>Email</th><th>Action</th></tr></thead>
-        <tbody id="students-table">
-          <tr><td><span class="badge badge-blue">21CS047</span></td><td>John Doe</td><td>Computer Science</td><td>Sem 5</td><td style="font-family:var(--font-mono);font-size:0.8rem">john@college.edu</td><td><button class="action-btn" onclick="showPage('credits',null)">Issue Credit</button></td></tr>
-          <tr><td><span class="badge badge-blue">21CS048</span></td><td>Jane Smith</td><td>Computer Science</td><td>Sem 5</td><td style="font-family:var(--font-mono);font-size:0.8rem">jane@college.edu</td><td><button class="action-btn">Issue Credit</button></td></tr>
-          <tr><td><span class="badge badge-blue">21CS049</span></td><td>Alex Kumar</td><td>Information Tech</td><td>Sem 5</td><td style="font-family:var(--font-mono);font-size:0.8rem">alex@college.edu</td><td><button class="action-btn">Issue Credit</button></td></tr>
-          <tr><td><span class="badge badge-blue">21IT001</span></td><td>Priya R</td><td>Information Tech</td><td>Sem 3</td><td style="font-family:var(--font-mono);font-size:0.8rem">priya@college.edu</td><td><button class="action-btn">Issue Credit</button></td></tr>
-        </tbody>
-      </table>
+      <div class="section-header"><h3>All Students</h3><span id="student-count">Loading...</span></div>
+      <table><thead><tr><th>Reg No</th><th>Name</th><th>Department</th><th>Semester</th><th>Email</th><th>Action</th></tr></thead>
+      <tbody id="students-table"><tr><td colspan="6" class="msg">Loading...</td></tr></tbody></table>
     </div>
   </div>
-
-  <!-- COURSES PAGE -->
+ 
   <div class="page-section" id="page-courses">
-    <div class="topbar">
-      <div><div class="page-title">Courses</div><div class="page-sub">// Manage course catalog</div></div>
-      <div class="topbar-right"><button class="btn-sm" onclick="openModal('modal-add-course')">+ Add Course</button></div>
-    </div>
+    <div class="topbar"><div><div class="page-title">Courses</div><div class="page-sub">// Manage course catalog</div></div>
+    <div class="topbar-right"><button class="btn-sm" onclick="openModal('modal-add-course')">+ Add Course</button></div></div>
     <div class="section-card">
-      <div class="section-header"><h3>All Courses</h3><span>8 courses</span></div>
-      <table>
-        <thead><tr><th>Code</th><th>Course Name</th><th>Credits</th><th>Department</th></tr></thead>
-        <tbody>
-          <tr><td><span class="badge badge-blue">CS301</span></td><td>Database Management Systems</td><td>4</td><td>CSE / IT</td></tr>
-          <tr><td><span class="badge badge-blue">CS302</span></td><td>Operating Systems</td><td>3</td><td>CSE</td></tr>
-          <tr><td><span class="badge badge-blue">CS303</span></td><td>Computer Networks</td><td>3</td><td>CSE / IT</td></tr>
-          <tr><td><span class="badge badge-blue">CS304</span></td><td>Design & Analysis of Algorithms</td><td>4</td><td>CSE</td></tr>
-          <tr><td><span class="badge badge-blue">CS305</span></td><td>Software Engineering</td><td>3</td><td>CSE / IT</td></tr>
-        </tbody>
-      </table>
+      <div class="section-header"><h3>All Courses</h3><span id="course-count">Loading...</span></div>
+      <table><thead><tr><th>Code</th><th>Course Name</th><th>Credits</th><th>Department</th></tr></thead>
+      <tbody id="courses-table"><tr><td colspan="4" class="msg">Loading...</td></tr></tbody></table>
     </div>
   </div>
-
-  <!-- ISSUE CREDITS PAGE -->
+ 
   <div class="page-section" id="page-credits">
-    <div class="topbar">
-      <div><div class="page-title">Issue Credits</div><div class="page-sub">// Record student credits on blockchain</div></div>
-    </div>
+    <div class="topbar"><div><div class="page-title">Issue Credits</div><div class="page-sub">// Record student credits on blockchain</div></div></div>
     <div class="section-card" style="max-width:600px">
       <div class="section-header"><h3>Issue New Credit</h3><span>Will be stored in MySQL + Blockchain</span></div>
       <div style="padding:1.5rem">
         <div style="background:rgba(0,212,255,0.05);border:1px solid rgba(0,212,255,0.15);border-radius:8px;padding:1rem;margin-bottom:1.5rem;font-family:var(--font-mono);font-size:0.78rem;color:var(--muted);line-height:1.8">
           <strong style="color:var(--accent)">// Blockchain Steps</strong><br/>
-          1. Fill form → Save to MySQL via Spring Boot<br/>
-          2. Go to Remix IDE → Call issueCredit() function<br/>
-          3. Copy transaction hash from Remix<br/>
-          4. Paste hash below → Update record
+          1. Fill form → Save to MySQL<br/>2. Go to Remix IDE → Call issueCredit()<br/>3. Copy transaction hash<br/>4. Paste hash below → Update record
         </div>
-        <div class="form-group">
-          <label>Select Student</label>
-          <select id="sel-student">
-            <option value="">Choose student...</option>
-            <option value="21CS047">21CS047 — John Doe</option>
-            <option value="21CS048">21CS048 — Jane Smith</option>
-            <option value="21CS049">21CS049 — Alex Kumar</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Select Course</label>
-          <select id="sel-course">
-            <option value="">Choose course...</option>
-            <option value="CS301">CS301 — DBMS (4 credits)</option>
-            <option value="CS302">CS302 — Operating Systems (3 credits)</option>
-            <option value="CS303">CS303 — Networks (3 credits)</option>
-            <option value="CS304">CS304 — Algorithms (4 credits)</option>
-          </select>
-        </div>
+        <div class="form-group"><label>Select Student</label><select id="sel-student"><option value="">Loading students...</option></select></div>
+        <div class="form-group"><label>Select Course</label><select id="sel-course"><option value="">Loading courses...</option></select></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-          <div class="form-group">
-            <label>Grade</label>
-            <select id="sel-grade">
-              <option>O</option><option>A+</option><option>A</option>
-              <option>B+</option><option>B</option><option>C</option>
-            </select>
+          <div class="form-group"><label>Grade</label>
+            <select id="sel-grade"><option>O</option><option>A+</option><option>A</option><option>B+</option><option>B</option><option>C</option></select>
           </div>
-          <div class="form-group">
-            <label>Transaction Hash (optional)</label>
-            <input type="text" id="tx-hash" placeholder="0x... (paste from Remix)"/>
-          </div>
+          <div class="form-group"><label>Credits Earned</label><input type="number" id="credits-earned" value="4" min="1" max="6"/></div>
         </div>
+        <div class="form-group"><label>Transaction Hash (optional — paste from Remix)</label><input type="text" id="tx-hash" placeholder="0x... (paste from Remix)"/></div>
         <button class="btn-submit" style="width:100%;margin-top:0.5rem" onclick="issueCredit()">⛓ Issue Credit → Save to DB</button>
         <div id="issue-success" style="display:none;margin-top:1rem;background:rgba(0,255,157,0.08);border:1px solid rgba(0,255,157,0.2);border-radius:8px;padding:1rem;font-family:var(--font-mono);font-size:0.8rem;color:var(--green)">
           ✅ Credit issued and saved! Now go to Remix IDE → call issueCredit() → paste hash above.
@@ -258,93 +162,175 @@
       </div>
     </div>
   </div>
-
-  <!-- ALL RECORDS PAGE -->
+ 
   <div class="page-section" id="page-records">
-    <div class="topbar">
-      <div><div class="page-title">All Records</div><div class="page-sub">// All issued credits with blockchain proof</div></div>
-    </div>
+    <div class="topbar"><div><div class="page-title">All Records</div><div class="page-sub">// All issued credits with blockchain proof</div></div></div>
     <div class="section-card">
-      <div class="section-header"><h3>Issued Credits</h3><span>156 records</span></div>
-      <table>
-        <thead><tr><th>Student</th><th>Course</th><th>Grade</th><th>Credits</th><th>Tx Hash</th><th>Status</th><th>Date</th></tr></thead>
-        <tbody>
-          <tr><td>21CS047 — John</td><td>DBMS</td><td><span class="badge badge-green">A+</span></td><td>4</td><td><a href="https://sepolia.etherscan.io/tx/0x3f4a" target="_blank" class="hash-link">0x3f4a...8c2d ↗</a></td><td><span class="badge badge-green">● Verified</span></td><td>12 Jan</td></tr>
-          <tr><td>21CS048 — Jane</td><td>OS</td><td><span class="badge badge-blue">A</span></td><td>3</td><td><a href="https://sepolia.etherscan.io/tx/0x9b2c" target="_blank" class="hash-link">0x9b2c...1a4e ↗</a></td><td><span class="badge badge-green">● Verified</span></td><td>12 Jan</td></tr>
-          <tr><td>21CS049 — Alex</td><td>Networks</td><td><span class="badge badge-yellow">B+</span></td><td>3</td><td><span style="font-family:var(--font-mono);font-size:0.72rem;color:var(--muted)">Pending...</span></td><td><span class="badge badge-yellow">● Pending</span></td><td>11 Jan</td></tr>
-        </tbody>
-      </table>
+      <div class="section-header"><h3>Issued Credits</h3><span id="records-count">Loading...</span></div>
+      <table><thead><tr><th>Student</th><th>Course</th><th>Grade</th><th>Credits</th><th>Tx Hash</th><th>Status</th><th>Date</th></tr></thead>
+      <tbody id="records-table"><tr><td colspan="7" class="msg">Loading...</td></tr></tbody></table>
     </div>
   </div>
-
+ 
 </div>
-
+ 
 <!-- ADD STUDENT MODAL -->
 <div class="modal-overlay" id="modal-add-student">
   <div class="modal">
     <h3>Add New Student</h3>
     <div class="modal-sub">Register a student and create their login account</div>
-    <div class="form-group"><label>Full Name</label><input type="text" placeholder="John Doe"/></div>
+    <div class="form-group"><label>Full Name</label><input type="text" id="s-name" placeholder="John Doe"/></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-      <div class="form-group"><label>Register No</label><input type="text" placeholder="21CS047"/></div>
-      <div class="form-group"><label>Semester</label><select><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option></select></div>
+      <div class="form-group"><label>Register No</label><input type="text" id="s-regno" placeholder="21CS047"/></div>
+      <div class="form-group"><label>Semester</label>
+        <select id="s-sem"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5" selected>5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option></select>
+      </div>
     </div>
-    <div class="form-group"><label>Department</label><select><option>Computer Science</option><option>Information Technology</option><option>Electronics</option></select></div>
-    <div class="form-group"><label>Email</label><input type="email" placeholder="student@college.edu"/></div>
-    <div class="form-group"><label>Temp Password</label><input type="password" placeholder="Set initial password"/></div>
+    <div class="form-group"><label>Department</label>
+      <select id="s-dept"><option value="Computer Science">Computer Science</option><option value="Information Technology">Information Technology</option><option value="Electronics">Electronics</option><option value="Mechanical">Mechanical</option></select>
+    </div>
+    <div class="form-group"><label>Email</label><input type="email" id="s-email" placeholder="student@college.edu"/></div>
+    <div class="form-group"><label>Temp Password</label><input type="password" id="s-pass" placeholder="Set initial password"/></div>
     <div class="modal-btns">
       <button class="btn-cancel" onclick="closeModal('modal-add-student')">Cancel</button>
-      <button class="btn-submit" onclick="closeModal('modal-add-student')">Add Student →</button>
+      <button class="btn-submit" onclick="addStudent()">Add Student →</button>
     </div>
   </div>
 </div>
-
+ 
 <!-- ADD COURSE MODAL -->
 <div class="modal-overlay" id="modal-add-course">
   <div class="modal">
     <h3>Add New Course</h3>
     <div class="modal-sub">Add a course to the system</div>
-    <div class="form-group"><label>Course Name</label><input type="text" placeholder="Database Management Systems"/></div>
+    <div class="form-group"><label>Course Name</label><input type="text" id="c-name" placeholder="Database Management Systems"/></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-      <div class="form-group"><label>Course Code</label><input type="text" placeholder="CS301"/></div>
-      <div class="form-group"><label>Max Credits</label><input type="number" placeholder="4"/></div>
+      <div class="form-group"><label>Course Code</label><input type="text" id="c-code" placeholder="CS301"/></div>
+      <div class="form-group"><label>Max Credits</label><input type="number" id="c-credits" value="4" min="1" max="6"/></div>
     </div>
-    <div class="form-group"><label>Department</label><select><option>CSE / IT</option><option>CSE</option><option>IT</option><option>All</option></select></div>
+    <div class="form-group"><label>Department</label>
+      <select id="c-dept"><option value="CSE / IT">CSE / IT</option><option value="Computer Science">Computer Science</option><option value="Information Technology">Information Technology</option><option value="All">All Departments</option></select>
+    </div>
     <div class="modal-btns">
       <button class="btn-cancel" onclick="closeModal('modal-add-course')">Cancel</button>
-      <button class="btn-submit" onclick="closeModal('modal-add-course')">Add Course →</button>
+      <button class="btn-submit" onclick="addCourse()">Add Course →</button>
     </div>
   </div>
 </div>
-
+ 
 <script>
-  // Auth check
-  const user = JSON.parse(sessionStorage.getItem('user') || '{"name":"Admin","role":"ADMIN"}');
+  const API = 'http://localhost:8080';
+  const user = JSON.parse(localStorage.getItem('acadchain_user') || '{"name":"Admin"}');
   document.getElementById('admin-name').textContent = user.name || 'Admin';
-
-  function showPage(name, el) {
-    document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    document.getElementById('page-' + name).classList.add('active');
-    if (el) el.classList.add('active');
+ 
+  function showPage(name,el){document.querySelectorAll('.page-section').forEach(s=>s.classList.remove('active'));document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));document.getElementById('page-'+name).classList.add('active');if(el)el.classList.add('active');}
+  function openModal(id){document.getElementById(id).classList.add('show');}
+  function closeModal(id){document.getElementById(id).classList.remove('show');}
+  document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',function(e){if(e.target===this)this.classList.remove('show');}));
+ 
+  function loadDashboard(){
+    fetch(API+'/api/admin/dashboard',{credentials:'include'}).then(r=>r.json()).then(d=>{
+      document.getElementById('stat-students').textContent=d.totalStudents||0;
+      document.getElementById('stat-courses').textContent=d.totalCourses||0;
+      document.getElementById('stat-credits').textContent=d.totalCreditsIssued||0;
+      document.getElementById('stat-verified').textContent=d.verifiedOnChain||0;
+    }).catch(()=>{});
+    fetch(API+'/api/admin/credits',{credentials:'include'}).then(r=>r.json()).then(records=>{
+      const t=document.getElementById('recent-table');
+      if(!records||!records.length){t.innerHTML='<tr><td colspan="6" class="msg">No records yet</td></tr>';return;}
+      t.innerHTML=records.slice(0,5).map(r=>`<tr><td>${r.registerNumber||''} — ${r.studentName||''}</td><td>${r.courseName||''}</td><td><span class="badge badge-green">${r.grade||''}</span></td><td>${r.creditsEarned||''}</td><td>${r.transactionHash?`<a href="https://sepolia.etherscan.io/tx/${r.transactionHash}" target="_blank" class="hash-link">${r.transactionHash.substring(0,10)}... ↗</a>`:'<span style="color:var(--muted);font-size:0.75rem">Pending</span>'}</td><td style="color:var(--muted);font-size:0.8rem">${r.issuedAt?r.issuedAt.substring(0,10):''}</td></tr>`).join('');
+    }).catch(()=>{});
   }
-
-  function openModal(id) { document.getElementById(id).classList.add('show'); }
-  function closeModal(id) { document.getElementById(id).classList.remove('show'); }
-  document.querySelectorAll('.modal-overlay').forEach(m => m.addEventListener('click', function(e){ if(e.target===this) this.classList.remove('show'); }));
-
-  function issueCredit() {
-    const student = document.getElementById('sel-student').value;
-    const course = document.getElementById('sel-course').value;
-    if (!student || !course) { alert('Please select student and course'); return; }
-    // TODO: POST to /api/credits/issue
-    document.getElementById('issue-success').style.display = 'block';
+ 
+  function loadStudents(){
+    fetch(API+'/api/admin/students',{credentials:'include'}).then(r=>r.json()).then(students=>{
+      document.getElementById('student-count').textContent=students.length+' students';
+      const t=document.getElementById('students-table');
+      if(!students||!students.length){t.innerHTML='<tr><td colspan="6" class="msg">No students yet. Click + Add Student!</td></tr>';return;}
+      t.innerHTML=students.map(s=>`<tr><td><span class="badge badge-blue">${s.registerNumber||'N/A'}</span></td><td>${s.name||''}</td><td>${s.department||''}</td><td>Sem ${s.semester||''}</td><td style="font-family:var(--font-mono);font-size:0.8rem">${s.email||''}</td><td><button class="action-btn" onclick="showPage('credits',null);loadDropdowns()">Issue Credit</button></td></tr>`).join('');
+    }).catch(()=>{document.getElementById('students-table').innerHTML='<tr><td colspan="6" class="err">❌ Cannot connect. Is Spring Boot running on port 8080?</td></tr>';});
   }
-
-  function logout() {
-    sessionStorage.clear();
-    window.location.href = 'login.html';
+ 
+  function loadCourses(){
+    fetch(API+'/api/admin/courses',{credentials:'include'}).then(r=>r.json()).then(courses=>{
+      document.getElementById('course-count').textContent=courses.length+' courses';
+      const t=document.getElementById('courses-table');
+      if(!courses||!courses.length){t.innerHTML='<tr><td colspan="4" class="msg">No courses yet. Click + Add Course!</td></tr>';return;}
+      t.innerHTML=courses.map(c=>`<tr><td><span class="badge badge-blue">${c.courseCode||''}</span></td><td>${c.courseName||''}</td><td><span style="font-family:var(--font-mono);color:var(--accent)">${c.maxCredits||''}</span></td><td>${c.department||''}</td></tr>`).join('');
+    }).catch(()=>{});
   }
+ 
+  function loadDropdowns(){
+    fetch(API+'/api/admin/students',{credentials:'include'}).then(r=>r.json()).then(students=>{
+      const sel=document.getElementById('sel-student');
+      sel.innerHTML='<option value="">Choose student...</option>';
+      students.forEach(s=>{sel.innerHTML+=`<option value="${s.id}">${s.registerNumber} — ${s.name}</option>`;});
+    }).catch(()=>{});
+    fetch(API+'/api/admin/courses',{credentials:'include'}).then(r=>r.json()).then(courses=>{
+      const sel=document.getElementById('sel-course');
+      sel.innerHTML='<option value="">Choose course...</option>';
+      courses.forEach(c=>{sel.innerHTML+=`<option value="${c.id}">${c.courseCode} — ${c.courseName} (${c.maxCredits} credits)</option>`;});
+    }).catch(()=>{});
+  }
+ 
+  function loadRecords(){
+    fetch(API+'/api/admin/credits',{credentials:'include'}).then(r=>r.json()).then(records=>{
+      document.getElementById('records-count').textContent=records.length+' records';
+      const t=document.getElementById('records-table');
+      if(!records||!records.length){t.innerHTML='<tr><td colspan="7" class="msg">No records yet</td></tr>';return;}
+      t.innerHTML=records.map(r=>`<tr><td>${r.registerNumber||''} — ${r.studentName||''}</td><td>${r.courseName||''}</td><td><span class="badge badge-green">${r.grade||''}</span></td><td>${r.creditsEarned||''}</td><td>${r.transactionHash?`<a href="https://sepolia.etherscan.io/tx/${r.transactionHash}" target="_blank" class="hash-link">${r.transactionHash.substring(0,12)}... ↗</a>`:'<span style="color:var(--muted);font-size:0.75rem">Pending</span>'}</td><td><span class="badge ${r.blockchainStatus==='VERIFIED'?'badge-green':'badge-yellow'}">● ${r.blockchainStatus||'PENDING'}</span></td><td style="color:var(--muted);font-size:0.8rem">${r.issuedAt?r.issuedAt.substring(0,10):''}</td></tr>`).join('');
+    }).catch(()=>{});
+  }
+ 
+  function addStudent(){
+    const name=document.getElementById('s-name').value.trim();
+    const email=document.getElementById('s-email').value.trim();
+    const password=document.getElementById('s-pass').value.trim();
+    const registerNumber=document.getElementById('s-regno').value.trim();
+    const department=document.getElementById('s-dept').value;
+    const semester=parseInt(document.getElementById('s-sem').value);
+    if(!name||!email||!password||!registerNumber){alert('Please fill all fields!');return;}
+    fetch(API+'/api/admin/students',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'include',body:JSON.stringify({name,email,password,registerNumber,department,semester})})
+    .then(r=>r.json()).then(result=>{
+      if(result.success){alert('✅ Student added successfully!');closeModal('modal-add-student');document.getElementById('s-name').value='';document.getElementById('s-email').value='';document.getElementById('s-pass').value='';document.getElementById('s-regno').value='';loadStudents();loadDashboard();}
+      else alert('❌ '+result.message);
+    }).catch(()=>alert('❌ Cannot connect to server!\nMake sure Spring Boot is running on port 8080'));
+  }
+ 
+  function addCourse(){
+    const courseName=document.getElementById('c-name').value.trim();
+    const courseCode=document.getElementById('c-code').value.trim();
+    const maxCredits=parseInt(document.getElementById('c-credits').value);
+    const department=document.getElementById('c-dept').value;
+    if(!courseName||!courseCode){alert('Please fill all fields!');return;}
+    fetch(API+'/api/admin/courses',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'include',body:JSON.stringify({courseName,courseCode,maxCredits,department})})
+    .then(r=>r.json()).then(result=>{
+      if(result.success){alert('✅ Course added successfully!');closeModal('modal-add-course');document.getElementById('c-name').value='';document.getElementById('c-code').value='';loadCourses();loadDashboard();}
+      else alert('❌ '+result.message);
+    }).catch(()=>alert('❌ Cannot connect to server!'));
+  }
+ 
+  function issueCredit(){
+    const studentId=document.getElementById('sel-student').value;
+    const courseId=document.getElementById('sel-course').value;
+    const grade=document.getElementById('sel-grade').value;
+    const creditsEarned=parseInt(document.getElementById('credits-earned').value);
+    const transactionHash=document.getElementById('tx-hash').value.trim();
+    if(!studentId||!courseId){alert('Please select both student and course!');return;}
+    fetch(API+'/api/admin/credits/issue',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'include',body:JSON.stringify({studentId,courseId,grade,creditsEarned,transactionHash})})
+    .then(r=>r.json()).then(result=>{
+      if(result.success){document.getElementById('issue-success').style.display='block';document.getElementById('tx-hash').value='';loadDashboard();}
+      else alert('❌ '+result.message);
+    }).catch(()=>alert('❌ Cannot connect to server!'));
+  }
+ 
+  function logout(){
+    fetch(API+'/api/auth/logout',{method:'POST',credentials:'include'}).catch(()=>{});
+    localStorage.removeItem('acadchain_user');
+    window.location.href='login.html';
+  }
+ 
+  window.onload=function(){loadDashboard();}
 </script>
 </body>
 </html>
