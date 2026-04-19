@@ -89,7 +89,10 @@
     .then(r => r.json())
     .then(data => {
       if (data.success) {
-        localStorage.setItem('acadchain_user', JSON.stringify(data));
+  localStorage.setItem('acadchain_user',
+    JSON.stringify(data));
+  localStorage.setItem('jwt_token',
+    data.token);
         if (data.role === 'ADMIN') window.location.href = 'admin-dashboard.html';
         else window.location.href = 'student-dashboard.html';
       } else {

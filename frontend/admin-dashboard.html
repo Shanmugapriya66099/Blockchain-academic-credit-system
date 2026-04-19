@@ -167,7 +167,7 @@
     <div class="topbar"><div><div class="page-title">All Records</div><div class="page-sub">// All issued credits with blockchain proof</div></div></div>
     <div class="section-card">
       <div class="section-header"><h3>Issued Credits</h3><span id="records-count">Loading...</span></div>
-      <table><thead><tr><th>Student</th><th>Course</th><th>Grade</th><th>Credits</th><th>Tx Hash</th><th>Status</th><th>Date</th></tr></thead>
+      <table><thead><tr><th>Student</th><th>Course</th><th>Grade</th><th>Credits</th><th>Tx Hash</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
       <tbody id="records-table"><tr><td colspan="7" class="msg">Loading...</td></tr></tbody></table>
     </div>
   </div>
@@ -278,7 +278,23 @@
       document.getElementById('records-count').textContent=records.length+' records';
       const t=document.getElementById('records-table');
       if(!records||!records.length){t.innerHTML='<tr><td colspan="7" class="msg">No records yet</td></tr>';return;}
-      t.innerHTML=records.map(r=>`<tr><td>${r.registerNumber||''} — ${r.studentName||''}</td><td>${r.courseName||''}</td><td><span class="badge badge-green">${r.grade||''}</span></td><td>${r.creditsEarned||''}</td><td>${r.transactionHash?`<a href="https://sepolia.etherscan.io/tx/${r.transactionHash}" target="_blank" class="hash-link">${r.transactionHash.substring(0,12)}... ↗</a>`:'<span style="color:var(--muted);font-size:0.75rem">Pending</span>'}</td><td><span class="badge ${r.blockchainStatus==='VERIFIED'?'badge-green':'badge-yellow'}">● ${r.blockchainStatus||'PENDING'}</span></td><td style="color:var(--muted);font-size:0.8rem">${r.issuedAt?r.issuedAt.substring(0,10):''}</td></tr>`).join('');
+     t.innerHTML=records.map(r=>`<tr>
+  <td>${r.registerNumber||''} — ${r.studentName||''}</td>
+  <td>${r.courseName||''}</td>
+  <td><span class="badge badge-green">${r.grade||''}</span></td>
+  <td>${r.creditsEarned||''}</td>
+  <td>${r.transactionHash?`<a href="https://sepolia.etherscan.io/tx/${r.transactionHash}" 
+  target="_blank" class="hash-link">${r.transactionHash.substring(0,12)}... ↗</a>`:
+  '<span style="color:var(--muted);font-size:0.75rem">No hash yet</span>'}</td>
+  <td><span class="badge ${r.blockchainStatus==='VERIFIED'?'badge-green':'badge-yellow'}">
+  ● ${r.blockchainStatus||'PENDING'}</span></td>
+  <td style="color:var(--muted);font-size:0.8rem">${r.issuedAt?r.issuedAt.substring(0,10):''}</td>
+  <td>${r.blockchainStatus!=='VERIFIED'?
+    `<button class="action-btn" style="border-color:#00d4ff;color:#00d4ff" 
+     onclick="updateHash(${r.id})">+ Add Hash</button>`
+    :'<span style="color:var(--green);font-size:0.75rem">✓ Verified</span>'}
+  </td>
+</tr>`).join('');
     }).catch(()=>{});
   }
  
@@ -323,7 +339,54 @@
       else alert('❌ '+result.message);
     }).catch(()=>alert('❌ Cannot connect to server!'));
   }
- 
+ function updateHash(creditId) {
+    const hash = prompt('Paste your transaction hash from Remix:\n(starts with 0x...)');
+    
+    // FIX 1 - Proper hash length check (real hash is 66 chars)
+    if (!hash || !hash.startsWith('0x') || hash.length !== 66) {
+        alert('❌ Invalid hash!\nA real Ethereum hash must be exactly 66 characters.\nExample: 0x + 64 characters');
+        return;
+    }
+
+    // FIX 2 - Check if hash already used before sending to server
+    fetch(API + '/api/admin/credits', {
+        method: 'GET',
+        credentials: 'include'
+    })
+    .then(r => r.json())
+    .then(records => {
+        // Check if this hash already exists in any record
+        const duplicate = records.find(r => r.transactionHash === hash);
+        if (duplicate) {
+            alert('❌ This transaction hash is already used!\nEach credit must have a unique blockchain transaction.');
+            return;
+        }
+
+        // Hash is valid and unique — now update
+        fetch(API + '/api/admin/credits/hash', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({
+                creditId: creditId,
+                transactionHash: hash
+            })
+        })
+        .then(r => r.json())
+        .then(result => {
+            if (result.success) {
+                alert('✅ Hash updated! Record is now VERIFIED on blockchain!');
+                loadRecords();
+                loadDashboard();
+            } else {
+                alert('❌ ' + result.message);
+            }
+        })
+        .catch(() => alert('❌ Cannot connect to server!'));
+    })
+    .catch(() => alert('❌ Cannot connect to server!'));
+}
+
   function logout(){
     fetch(API+'/api/auth/logout',{method:'POST',credentials:'include'}).catch(()=>{});
     localStorage.removeItem('acadchain_user');
