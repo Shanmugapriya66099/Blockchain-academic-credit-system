@@ -31,7 +31,7 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", columnDefinition = "TIMESTAMP")
     private LocalDateTime createdAt;
 
     @PrePersist

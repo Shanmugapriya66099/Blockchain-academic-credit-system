@@ -43,7 +43,7 @@ public class IssuedCredit {
     @JoinColumn(name = "issued_by")
     private User issuedBy;
 
-    @Column(name = "issued_at")
+    @Column(name = "issued_at", columnDefinition = "TIMESTAMP")
     private LocalDateTime issuedAt;
 
     @PrePersist
