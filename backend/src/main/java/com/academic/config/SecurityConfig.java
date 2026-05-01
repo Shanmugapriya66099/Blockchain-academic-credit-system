@@ -52,22 +52,21 @@ public class SecurityConfig {
     }
 
     @Bean
-    public CorsConfigurationSource
-    corsConfigurationSource() {
-        CorsConfiguration config =
-                new CorsConfiguration();
-        config.setAllowedOriginPatterns(
-                List.of("*"));
-        config.setAllowedMethods(
-                Arrays.asList(
-                        "GET", "POST", "PUT",
-                        "DELETE", "OPTIONS"));
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(Arrays.asList(
+                "https://acadchain-frontend.onrender.com",
+                "http://localhost:8080",
+                "file://"
+        ));
+        config.setAllowedMethods(Arrays.asList(
+                "GET", "POST", "PUT", "DELETE", "OPTIONS"
+        ));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source =
                 new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration(
-                "/**", config);
+        source.registerCorsConfiguration("/**", config);
         return source;
     }
 }
