@@ -351,7 +351,7 @@
     // FIX 2 - Check if hash already used before sending to server
     fetch(API + '/api/admin/credits', {
         method: 'GET',
-        
+        credentials: 'include'
     })
     .then(r => r.json())
     .then(records => {
@@ -366,7 +366,7 @@
         fetch(API + '/api/admin/credits/hash', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            ,
+            credentials: 'include',
             body: JSON.stringify({
                 creditId: creditId,
                 transactionHash: hash
